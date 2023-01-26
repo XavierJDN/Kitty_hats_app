@@ -16,6 +16,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         MongooseModule.forFeature([]), // create the mogoDB database (shema = { name: string, schema:  <service>})
     ],
     controllers: [], // all controllers are imported here
-    providers: [Logger],
+    providers: [FsManager, ContractInteractionService, KittyContractManagerService, Logger],
 })
 export class AppModule {}
