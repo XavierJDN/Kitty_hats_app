@@ -1,27 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { AbiItem } from 'web3-utils';
-import { Contract } from 'web3-eth-contract';
 import { FsManager } from '@app/services/fs_manager/fs_manager.service';
-import Web3 from 'web3';
+const Web3 = require('web3')
+const Contract = require('web3-eth-contract');
 
 @Injectable()
 export class ContractInteractionService {
-  // ...
+  web3: typeof Web3;
+
+  constructor() {
+    if(!this.web3){
+      this.web3 = new Web3('https://mainnet.infura.io/v3/971ed22e4e2e4276b37166adebf4b1ac');
+    }
+    if(!Contract.currentProvider){
+      Contract.setProvider(this.web3.currentProvider);
+    }
+  }
   public async getContractInstance(
     contractName: string,
-    web3: Web3,
-  ): Promise<Contract> {
-    return new web3.eth.Contract(
+  ): Promise<typeof Contract> {
+    return new Contract(
       await this.getContractAbi(contractName),
       await this.getContractAddress(contractName),
     );
   }
 
     private async getContractAbi(contractName: string): Promise<AbiItem> {
-        return JSON.parse(((await FsManager.readFile(`@app/assets/${contractName}/abi.json`))).toString());
+        return JSON.parse(((await FsManager.readFile(`./assets/contracts/${contractName}/abi.json`))).toString());
     }
 
     private async getContractAddress(contractName: string): Promise<string> {
-        return JSON.parse(((await FsManager.readFile(`@app/assets/${contractName}/index.json`))).toString())['address'];
+        return JSON.parse(((await FsManager.readFile(`./assets/contracts/${contractName}/index.json`))).toString())['address'];
     }
 }
