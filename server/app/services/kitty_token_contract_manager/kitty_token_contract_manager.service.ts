@@ -16,6 +16,9 @@ export class KittyTokenContractManagerService {
     return this.contract = await this.contractInteractionService.web3.eth.Contract( await this.getContractABI(address), address);
   }
 
+  private async info(token: string){
+    this.kittyTokenMarketContractManagerService.token(token).then((token: any) => this.token = token);
+  }
 
   async getContractABI(address: string) {
     if(!this.token) await this.info(address);
