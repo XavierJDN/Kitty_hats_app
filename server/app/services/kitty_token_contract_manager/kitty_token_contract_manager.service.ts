@@ -24,4 +24,13 @@ export class KittyTokenContractManagerService {
     if(!this.token) await this.info(address);
     return JSON.parse((await FsManager.readFile(`../contracts/build/contracts/${this.token.contract}.json`)).toString()).abi;
   }
+  async getImage(address: string, isAsset: boolean = false) {
+    if(!this.token) await this.info(address);
+    return access(`../kitty-hats-manifest/build/${isAsset ? 'asset': 'preview' }/${this.token.assetUrl}.png`, constants.F_OK, async (err) =>
+      { return {
+        img: await FsManager.readFile(`../kitty-hats-manifest/build/${isAsset ? 'asset': 'preview' }/${this.token.assetUrl}.${err ? 'svg': 'png'}`),
+        isPng: !err
+      }
+    });
+  }
 }
