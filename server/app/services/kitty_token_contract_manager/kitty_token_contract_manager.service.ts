@@ -4,13 +4,14 @@ import { Contract } from 'web3-eth-contract';
 import { FsManager } from "../fs_manager/fs_manager.service";
 import { access, constants } from 'fs';
 
-
+@Injectable()
 
 export class KittyTokenContractManagerService {
-    private contract: Contract;
-    private token: any;
-    constructor(private contractInteractionService: ContractInteractionService,private kittyTokenMarketContractManagerService: KittyTokenContractManagerService) {
-    }
+  constructor(
+    private contractInteractionService: ContractInteractionService,
+    private kittyTokenMarketContractManagerService: KittyTokenMarketContractManagerService
+  ) {
+  }
 
   async setContract(address: string) {
     return this.contract = await this.contractInteractionService.web3.eth.Contract( await this.getContractABI(address), address);
