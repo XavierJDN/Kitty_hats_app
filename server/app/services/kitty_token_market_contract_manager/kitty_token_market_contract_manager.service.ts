@@ -18,6 +18,7 @@ export class KittyTokenMarketContractManagerService {
     const listing = JSON.parse((await FsManager.readFile(`../kitty-hats-manifest/build/listing_1.json`)).toString());
     this.tokens = Object.values(Object.values(listing.categories).map((category: any) => category.item)).reduce((prev, cur) => prev.push(cur));
   }
+
   async token(address: string) {
     if(!this.tokens) await this.infos();
     return this.tokens.find((token: any) => token.address === address);
