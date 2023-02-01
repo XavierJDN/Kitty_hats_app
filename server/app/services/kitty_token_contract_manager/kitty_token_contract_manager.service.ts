@@ -33,10 +33,16 @@ export class KittyTokenContractManagerService {
     };
   }
 
-  async getContractABI(address: string) {
-    if(!this.token) await this.info(address);
-    return JSON.parse((await FsManager.readFile(`../contracts/build/contracts/${this.token.contract}.json`)).toString()).abi;
+  async getContractABI(contractName: string) {
+    return JSON.parse(
+      (
+        await FsManager.readFile(
+          `../contracts/build/contracts/${contractName}.json`
+        )
+      ).toString()
+    ).abi;
   }
+
   async getImage(address: string, isAsset: boolean = false) {
     const token = await this.info(address); 
     return access(
