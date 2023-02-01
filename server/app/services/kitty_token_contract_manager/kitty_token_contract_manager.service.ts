@@ -13,7 +13,10 @@ export class KittyTokenContractManagerService {
   }
 
   async setContract(address: string) {
-    return this.contract = await this.contractInteractionService.web3.eth.Contract( await this.getContractABI(address), address);
+    return await this.contractInteractionService.web3.eth.Contract(
+        await this.getContractABI(address),
+        address
+      );
   }
 
   private async info(token: string) {
