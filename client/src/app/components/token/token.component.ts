@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { CommunicationService } from '@app/services/communication/communication.service';
 
 @Component({
   selector: 'app-token',
   templateUrl: './token.component.html',
-  styleUrls: ['./token.component.scss']
+  styleUrls: ['./token.component.scss'],
 })
-export class TokenComponent implements OnInit {
-  token: any;
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+export class TokenComponent {
+  @Input()
+  token: { address: string; name: string; img: string; artist: string } = {
+    address: '',
+    name: '',
+    img: '',
+    artist: '',
+  };
 }
