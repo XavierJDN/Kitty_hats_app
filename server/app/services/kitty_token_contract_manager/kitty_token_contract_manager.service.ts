@@ -1,7 +1,7 @@
 import { ContractInteractionService } from "@app/services/contract_interaction/contract_interaction.service";
 import { Injectable } from "@nestjs/common";
 import { FsManager } from "@app/services/fs_manager/fs_manager.service";
-import { access, constants } from "fs";
+import { access, constants, existsSync } from "fs";
 import { KittyTokenMarketContractManagerService } from "@app/services/kitty_token_market_contract_manager/kitty_token_market_contract_manager.service";
 
 @Injectable()
@@ -9,24 +9,23 @@ export class KittyTokenContractManagerService {
   constructor(
     private contractInteractionService: ContractInteractionService,
     private kittyTokenMarketContractManagerService: KittyTokenMarketContractManagerService
-  ) {
-  }
+  ) {}
 
   async setContract(address: string) {
-    return await this.contractInteractionService.web3.eth.Contract(
-        await this.getContractABI(address),
-        address
-      );
+    return new this.contractInteractionService.web3.eth.Contract(
+      await this.getContractABI((await this.info(address)).contract),
+      address
+    );
   }
 
   private async info(token: string) {
-    return await this.kittyTokenMarketContractManagerService
-      .token(token)
+    return await this.kittyTokenMarketContractManagerService.token(token);
   }
 
   async getInfo(address: string) {
-    const token = await this.info(address)
+    const token = await this.info(address);
     return {
+      address: token.tokenAddress,
       name: token.name,
       img: await this.getImage(address),
       artist: token.artist,
@@ -44,22 +43,19 @@ export class KittyTokenContractManagerService {
   }
 
   async getImage(address: string, isAsset: boolean = false) {
-    const token = await this.info(address); 
-    return access(
+    const token = await this.info(address);
+    return await FsManager.base64Encode(
       `../kitty-hats-manifest/build/${isAsset ? "asset" : "preview"}/${
         token.assetUrl
-      }.png`,
-      constants.F_OK,
-      async (err) => {
-        return {
-          address: token.tokenAddress,
-          img: await FsManager.base64Encode(
-            `../kitty-hats-manifest/build/${isAsset ? "asset" : "preview"}/${
-              token.assetUrl
-            }.${err ? "svg" : "png"}`
-          ),
-        };
-      }
+      }.${
+        existsSync(
+          `../kitty-hats-manifest/build/${isAsset ? "asset" : "preview"}/${
+            token.assetUrl
+          }.svg`
+        )
+          ? "svg"
+          : "png"
+      }`
     );
   }
 }
