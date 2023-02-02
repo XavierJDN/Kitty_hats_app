@@ -1,1 +1,5 @@
-<p>tokens works!</p>
+<mat-grid-list cols="3" rowHeight="25em">
+    <mat-grid-tile *ngFor="let token of tokens">
+        <app-token [token]="token"></app-token>
+    </mat-grid-tile>
+</mat-grid-list>
