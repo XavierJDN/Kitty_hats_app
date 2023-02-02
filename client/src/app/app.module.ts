@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { TokenComponent } from '@app/components/token/token.component';
 import { AppMaterialModule } from './modules/material.module';
 import { TokensComponent } from './components/tokens/tokens.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { TokensComponent } from './components/tokens/tokens.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    AppMaterialModule
+    AppMaterialModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
