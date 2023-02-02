@@ -14,13 +14,13 @@ export class KittyTokenMarketContractManagerService {
     return this.contract = await this.contractInteractionService.getContractInstance("kitty_token_market");
   }
 
-  private async infos() {
+  async infos() {
     const listing = JSON.parse((await FsManager.readFile(`../kitty-hats-manifest/build/listing_1.json`)).toString());
-    this.tokens = Object.values(Object.values(listing.categories).map((category: any) => category.item)).reduce((prev, cur) => prev.push(cur));
+    this.tokens = Object.values(Object.values(listing.categories).map((category: any) => category.items)).flat();
   }
 
   async token(address: string) {
     if(!this.tokens) await this.infos();
-    return this.tokens.find((token: any) => token.address === address);
+    return this.tokens.find((token: any) => token.tokenAddress === address);
   }
 }
