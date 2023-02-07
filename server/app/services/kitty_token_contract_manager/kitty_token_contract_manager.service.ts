@@ -44,18 +44,13 @@ export class KittyTokenContractManagerService {
 
   async getImage(address: string, isAsset: boolean = false) {
     const token = await this.info(address);
-    return await FsManager.base64Encode(
-      `../kitty-hats-manifest/build/${isAsset ? "asset" : "preview"}/${
-        token.assetUrl
-      }.${
-        existsSync(
-          `../kitty-hats-manifest/build/${isAsset ? "asset" : "preview"}/${
+    const path = `../kitty-hats-manifest/build/${
+      isAsset ? "asset" : "preview"
+    }/`;
+    const file = await FsManager.find(path, token.assetUrl);
+    return {
+      src: await FsManager.base64Encode(path + file),
             token.assetUrl
-          }.svg`
-        )
-          ? "svg"
-          : "png"
-      }`
-    );
+    };
   }
 }
