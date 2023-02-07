@@ -15,4 +15,9 @@ export class FsManager{
     static async base64Encode(file: string): Promise<string> {
       return Buffer.from(await this.readFile(file)).toString('base64')
     }
-}
+
+    static async find(path: string, filename: string): Promise<string | undefined>{
+      return promises.readdir(path).then(files => {
+        return files.find(file => this.fileBaseName(file) === filename);
+      })
+    }
