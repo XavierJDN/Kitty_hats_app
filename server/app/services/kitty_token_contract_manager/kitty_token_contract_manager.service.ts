@@ -50,7 +50,7 @@ export class KittyTokenContractManagerService {
     const file = await FsManager.find(path, token.assetUrl);
     return {
       src: await FsManager.base64Encode(path + file),
-            token.assetUrl
+      format: FsManager.getType(file) === 'svg' ? 'svg+xml' : FsManager.getType(file),
     };
   }
 }
