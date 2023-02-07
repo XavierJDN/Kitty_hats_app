@@ -13,6 +13,6 @@ export class FsManager{
     }
 
     static async base64Encode(file: string): Promise<string> {
-      return (await this.readFile(file)).toString('base64')
+      return Buffer.from(await this.readFile(file)).toString('base64')
     }
 }
