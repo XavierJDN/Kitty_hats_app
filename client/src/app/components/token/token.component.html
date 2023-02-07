@@ -4,7 +4,7 @@
         <mat-card-subtitle>{{token.artist}}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-        <img mat-card-image [src]="token.img" alt="token image" />
+        <img mat-card-image width="200em" height="200em" [src]="'data:image/' + token.img.format + ';base64,' + token.img.src" alt="token image" />
     </mat-card-content>
     <p>{{token.address}}</p>
 </mat-card>

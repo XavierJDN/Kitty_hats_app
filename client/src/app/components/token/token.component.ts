@@ -12,7 +12,7 @@ export class TokenComponent {
   token: Token = {
     address: '',
     name: '',
-    img: '',
+    img: { src: '', format: ''},
     artist: '',
   };
 }
