@@ -21,3 +21,11 @@ export class FsManager{
         return files.find(file => this.fileBaseName(file) === filename);
       })
     }
+
+    static fileBaseName(file: string): string {
+      return file.split('.')[0];
+    }
+    static getType(file: string): string {
+      return file.split('.').pop();
+    }
+}
