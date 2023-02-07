@@ -1,6 +1,6 @@
 export interface Token {
     address: string;
     name: string;
-    img: string;
+    img: { src: string, format: string};
     artist: string;
 }
