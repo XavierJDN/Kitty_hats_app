@@ -2,12 +2,13 @@ import { AppModule } from '@app/app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cors from 'cors';
 
 const bootstrap = async () => {
     const app = await NestFactory.create(AppModule);
     app.setGlobalPrefix('api');
     app.useGlobalPipes(new ValidationPipe());
-
+    app.use(cors());
     const config = new DocumentBuilder()
         .setTitle('Backend Server')
         .setDescription('Contract interaction API')
