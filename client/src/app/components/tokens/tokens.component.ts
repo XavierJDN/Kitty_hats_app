@@ -1,4 +1,4 @@
-import { HttpResponse, HttpStatusCode } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { Token } from '@common/token';
@@ -9,13 +9,25 @@ import { Token } from '@common/token';
 })
 export class TokensComponent implements OnInit {
   tokens: Token[] | null = [];
+  id: string | undefined;
+  isPrevious = true;
+  isNext = true;
   constructor( private communication: CommunicationService) { }
 
   ngOnInit(): void {
-    this.communication.getTokens().subscribe((response: HttpResponse<Token[]>) => {
-      this.tokens = response.status === HttpStatusCode.Ok ? response.body : [];
-      console.log(this.tokens!.find(token => token.address === '0x54616a975dec9256f8fe26a99b2fcd6affbf6eaf'))
+    this.communication.getTokens(this.id).subscribe((tokens: HttpResponse<any>) => {
+      this.tokens = tokens.body.page;
+      this.isPrevious = tokens.body.isPrevious;
+      this.isNext = tokens.body.isNext;
+      this.id = tokens.body.id;
     });
   }
-
+  changePage(isNext: boolean) {
+    this.communication.getTokens(this.id , isNext).subscribe((tokens: HttpResponse<any>) => {
+      console.log(tokens.body);
+      this.tokens = tokens.body.page;
+      this.isPrevious = tokens.body.isPrevious;
+      this.isNext = tokens.body.isNext;
+    });
+  }
 }
