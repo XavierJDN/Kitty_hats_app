@@ -11,7 +11,7 @@ export class KittyTokenContractManagerService {
     private kittyTokenMarketContractManagerService: KittyTokenMarketContractManagerService
   ) {}
 
-  async setContract(address: string) {
+  async tokenContract(address: string) {
     return new this.contractInteractionService.web3.eth.Contract(
       await this.getContractABI((await this.info(address)).contract),
       address
