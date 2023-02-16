@@ -59,6 +59,6 @@ export class KittyTokenController {
 
   @Get("/contract/:address")
   async contract(@Param("address") address: string) {
-    return await this.kittyTokenContractManagerService.setContract(address);
+    return await this.kittyTokenContractManagerService.tokenContract(address);
   }
 }
