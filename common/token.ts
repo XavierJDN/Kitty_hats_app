@@ -3,4 +3,5 @@ export interface Token {
     name: string;
     img: { src: string, format: string};
     artist: string;
+    isApply: boolean;
 }

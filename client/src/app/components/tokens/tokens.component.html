@@ -1,6 +1,6 @@
 <mat-grid-list cols="3" rowHeight="25em">
     <mat-grid-tile *ngFor="let token of tokens">
-        <app-token [token]="token"></app-token>
+        <app-token [token]="token" *ngIf="!token.isApply"></app-token>
     </mat-grid-tile>
 </mat-grid-list>
 <button mat-button [disabled]="!this.isPrevious" (click)="this.changePage(false)">Previous</button>

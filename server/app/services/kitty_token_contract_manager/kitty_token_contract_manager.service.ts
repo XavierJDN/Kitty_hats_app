@@ -29,6 +29,7 @@ export class KittyTokenContractManagerService {
       name: token.name,
       img: await this.getImage(address),
       artist: token.artist,
+      isApply: await this.isTokenApply(address),
     };
   }
 
@@ -40,6 +41,12 @@ export class KittyTokenContractManagerService {
         )
       ).toString()
     ).abi;
+  }
+
+  async isTokenApply(token: string) {
+    const applyEvents = await (await this.tokenContract(token)).getPastEvents("Apply", { fromBlock: 0, toBlock: "latest" });
+    const removeEvents = await (await this.tokenContract(token)).getPastEvents("Remove", { fromBlock: 0, toBlock: "latest" });
+    return applyEvents.filter((applyEvent) => removeEvents.find((removeEvent) => removeEvent.returnValues.kittyId === applyEvent.returnValues.kittyId) === undefined).length > 0;
   }
 
   async getImage(address: string, isAsset: boolean = false) {

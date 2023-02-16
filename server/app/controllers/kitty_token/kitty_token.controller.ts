@@ -6,10 +6,8 @@ import {
   Controller,
   Get,
   HttpStatus,
-  Logger,
   Param,
   Post,
-  Query,
   Res,
 } from "@nestjs/common";
 import { Response } from "express";
@@ -28,12 +26,11 @@ export class KittyTokenController {
     if (body.id === undefined) {
       if (body.limit === undefined || body.state === undefined)
         return response.status(HttpStatus.BAD_REQUEST).send();
-      return response
-        .status(HttpStatus.OK)
-        .send(
-          this.pageManager.insert(
-            body.limit,
-            body.state,
+      return response.status(HttpStatus.OK).send(
+        this.pageManager.insert(
+          body.limit,
+          body.state,
+          (
             await Promise.all(
               this.kittyTokenMarketContractManagerService.tokens.map(
                 async (token) =>
@@ -42,8 +39,9 @@ export class KittyTokenController {
                   )
               )
             )
-          )
-        );
+          ).filter((token) => !token.isApply)
+        )
+      );
     }
     const page = this.pageManager.next(
       body.id,
