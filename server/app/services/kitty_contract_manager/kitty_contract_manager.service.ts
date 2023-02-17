@@ -20,7 +20,7 @@ export class KittyContractManagerService {
   async getAllTokens(){
     const tokens = [];
     const supply = await this.getAllSupply();
-    for (let id = 1; id < supply; id++) {
+    for (let id = 0; id < supply; id++) {
       let kitty: any;
       let owner: string;
       try{
