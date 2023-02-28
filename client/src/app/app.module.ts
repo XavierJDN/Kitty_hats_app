@@ -7,12 +7,14 @@ import { TokenComponent } from '@app/components/token/token.component';
 import { AppMaterialModule } from './modules/material.module';
 import { TokensComponent } from './components/tokens/tokens.component';
 import { HttpClientModule } from '@angular/common/http';
+import { SearchBarComponent } from './search-bar/search-bar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TokenComponent,
-    TokensComponent
+    TokensComponent,
+    SearchBarComponent
   ],
   imports: [
     BrowserModule,
