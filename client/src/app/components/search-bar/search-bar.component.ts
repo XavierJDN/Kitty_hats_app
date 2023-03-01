@@ -1,6 +1,8 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { HttpResponse } from '@angular/common/http';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { AvailableFilterService } from '@app/services/avalaible-filter/available-filter.service';
+import { CommunicationService } from '@app/services/communication/communication.service';
 
 @Component({
   selector: 'app-search-bar',
@@ -16,17 +18,14 @@ export class SearchBarComponent {
   filter = { owner: '', author: '' };
 
   form: FormGroup = new FormGroup({
-    author: new FormControl('', Validators.required),
-    owner: new FormControl('', Validators.required),
+    author: new FormControl(''),
+    owner: new FormControl(''),
   });
 
-  constructor(private availableFilter: AvailableFilterService) {
-    this.availableFilter.authors.subscribe((authors: string[]) => {
-      this.authors = authors;
-    });
-    this.availableFilter.owners.subscribe((owners: string[]) => {
-      this.owners = owners;
-    });
+  constructor(private availableFilter: AvailableFilterService, private communication: CommunicationService) {}
+
+  ngOnInit(): void {
+    this.getAllAuthors();
   }
 
   isFormChanged() {
@@ -39,10 +38,14 @@ export class SearchBarComponent {
   }
 
   updateView() {
-    if (this.isFormChanged()) {
-      return;
-    }
     this.author.emit(this.form.get('author')?.value);
     this.owner.emit(this.form.get('owner')?.value);
+  }
+
+  getAllAuthors() {
+    this.communication.getAllArtists().subscribe((response: HttpResponse<any>) => {
+      console.log(response)
+      this.authors = response.body.filter((author: string) => author !== undefined && author !== null);
+    });
   }
 }
