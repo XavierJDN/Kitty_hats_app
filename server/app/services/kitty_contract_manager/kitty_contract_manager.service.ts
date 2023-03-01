@@ -29,7 +29,6 @@ export class KittyContractManagerService {
       }catch(e){
         return tokens;
       }
-      console.log(kitty);
       tokens.push({ ...kitty, owner});
       }
     return tokens;

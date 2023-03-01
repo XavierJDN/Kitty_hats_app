@@ -54,26 +54,6 @@ export class TokensComponent implements OnInit {
         this.communication.pageId = !this.communication.pageId ? tokens.body.id : this.communication.pageId;
         this.isPrevious = tokens.body.isPrevious;
         this.isNext = tokens.body.isNext;
-        this.availableToken.authors.next(
-          this.removeOccurrence(
-            tokens.body.page.map((token: Token) => token.artist)
-          )
-        );
-        this.availableToken.owners.next(
-          this.removeOccurrence(
-            tokens.body.page.map(
-              (token: Token, index: number, owners: string[]) => token.artist
-            )
-          )
-        ); //TODO: change to owner
       });
-  }
-  removeOccurrence(array: string[]) {
-    return array.reduce(
-      (prev: string[], curr: string) => {
-        return prev.includes(curr) ? prev : [...prev, curr];
-      },
-      [array[0]]
-    );
   }
 }

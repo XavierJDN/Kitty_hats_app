@@ -46,7 +46,7 @@ describe("KittyCOntractManagerService", () => {
     });
 
     it('should check the balance', () => {
-        const expectedBalance = 100;
+        const expectedBalance = 1;
         const expectedAddress = '0x123';
         service['contract'] = { methods: {balanceOf: () => ({ call: async () => new Promise(() => expectedBalance) }) }} as unknown as Contract;
         service.checkBalance(expectedAddress).then((balance) => {
