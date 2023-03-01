@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class AvailableFilterService {
-  authors: Subject<string> = new Subject();
-  owners: Subject<string> = new Subject();
+  authors: Subject<string[]> = new Subject();
+  owners: Subject<string[]> = new Subject();
   constructor() { }
 }
