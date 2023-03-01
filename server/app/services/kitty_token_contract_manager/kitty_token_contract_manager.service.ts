@@ -23,6 +23,8 @@ export class KittyTokenContractManagerService {
   }
 
   async getInfo(address: string) {
+    //TODO: get token holders address with quantity
+    //TODO: get the holders domaine name
     const token = await this.info(address);
     return {
       address: token.tokenAddress,
@@ -43,8 +45,8 @@ export class KittyTokenContractManagerService {
     ).abi;
   }
 
-  async isTokenApplied(token: string) {
-    return await (await this.tokenContract(token)).getPastEvents("Apply", { fromBlock: 0, toBlock: "latest" }).length > 0;
+  async isTokenApplied(token: string) { // TODO: 
+    return await (await this.tokenContract(token)).getPastEvents("Apply", { fromBlock: 0, toBlock: "latest" });
   }
 
   async getImage(address: string, isAsset: boolean = false) {
