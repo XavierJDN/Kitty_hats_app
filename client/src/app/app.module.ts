@@ -7,8 +7,11 @@ import { TokenComponent } from '@app/components/token/token.component';
 import { AppMaterialModule } from './modules/material.module';
 import { TokensComponent } from './components/tokens/tokens.component';
 import { HttpClientModule } from '@angular/common/http';
-import { SearchBarComponent } from './search-bar/search-bar.component';
-
+import { SearchBarComponent } from './components/search-bar/search-bar.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
     AppComponent,
@@ -20,7 +23,11 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
     BrowserModule,
     AppRoutingModule,
     AppMaterialModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule,
+    NoopAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

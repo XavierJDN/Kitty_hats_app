@@ -1,8 +1,8 @@
+<app-search-bar (author)="updateFocus(enumFocus.Author, $event)" (owner)="updateFocus(enumFocus.Owner, $event)"></app-search-bar>
 <mat-grid-list cols="3" rowHeight="25em">
-    <!-- TODO: add a filter by name and address inter-+ -->
-    <mat-grid-tile *ngFor="let token of tokens">
+    <mat-grid-tile *ngFor="let token of tokens if ">
         <app-token [token]="token"></app-token>
     </mat-grid-tile>
 </mat-grid-list>
-<button mat-button [disabled]="!this.isPrevious" (click)="this.changePage(false)">Previous</button>
-<button mat-button [disabled]="!this.isNext" (click)="this.changePage(true)">Next</button>
+<button mat-button [disabled]="!this.isPrevious" (click)="this.infoTokens(false)">Previous</button>
+<button mat-button [disabled]="!this.isNext" (click)="this.infoTokens(true)">Next</button>
