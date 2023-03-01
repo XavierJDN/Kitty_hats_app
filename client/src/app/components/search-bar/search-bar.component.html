@@ -1,12 +1,12 @@
 <form (ngSubmit)="updateView()" [formGroup]="this.form">
-    <mat-form-field formControlName="author">
-        <mat-select placeholder="Filter by Author">
+    <mat-form-field>
+        <mat-select placeholder="Filter by Author" formControlName="author">
             <mat-option [value]="">All authors</mat-option>
             <mat-option *ngFor="let author of authors" [value]="author">{{author}}</mat-option>
         </mat-select>
     </mat-form-field>
-    <mat-form-field formControlName="owner">
-        <mat-select placeholder="Filter by Owner">
+    <mat-form-field>
+        <mat-select placeholder="Filter by Owner" formControlName="owner">
             <mat-option [value]="">All owners</mat-option>
             <mat-option *ngFor="let owner of owners" [value]=owner>{{owner}}</mat-option>
         </mat-select>

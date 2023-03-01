@@ -23,4 +23,11 @@ export class KittyTokenMarketContractManagerService {
     if(!this.tokens) await this.infos();
     return this.tokens.find((token: any) => token.tokenAddress === address);
   }
+
+  async artists() {
+    if(!this.tokens) await this.infos();
+    return this.tokens.map((token: any) => token.artist).reduce((prev: string[], curr: string) => prev.includes(curr) ? prev : [...prev, curr],
+      [this.tokens[0].artist]
+    );
+  }
 }

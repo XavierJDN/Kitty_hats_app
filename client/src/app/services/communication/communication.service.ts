@@ -22,7 +22,11 @@ export class CommunicationService {
         );
   }
 
-  initializeTokensPage(filter: { author: string, owner: string} | undefined, limit: number = 30, state: number = 0): Observable<any> {
+  getAllArtists(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/tokens/artists`, { observe: 'response' });
+  }
+
+  private initializeTokensPage(filter: { author: string, owner: string} | undefined, limit: number = 30, state: number = 0): Observable<any> {
     return this.http
       .post(
         `${this.baseUrl}/tokens/`,
