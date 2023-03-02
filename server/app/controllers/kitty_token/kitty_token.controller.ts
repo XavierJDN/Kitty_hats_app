@@ -40,7 +40,12 @@ export class KittyTokenController {
               )
             )
           ).filter(
-            (token) => body.author === undefined || token.artist === body.author
+            (token) =>
+              body.author === undefined ||
+              token.artist === body.author ||
+              body.owner === undefined ||
+              token.owners.find((owner) => owner.address === body.owner) !==
+                undefined
           )
         )
       );
@@ -95,21 +100,18 @@ export class KittyTokenController {
   async kitties(@Res() response: Response) {
     await this.kittyTokenMarketContractManagerService.infos();
     const addresses = await Promise.all(
-      this.kittyTokenMarketContractManagerService.tokens.map(
-        async (token) =>
-        {
-          return {
-            address: token.tokenAddress,
-            kitties: await this.kittyTokenContractManagerService.kitties(
-              token.tokenAddress
-              )
-          }
-        }
-      )
-    )
+      this.kittyTokenMarketContractManagerService.tokens.map(async (token) => {
+        return {
+          address: token.tokenAddress,
+          kitties: await this.kittyTokenContractManagerService.kitties(
+            token.tokenAddress
+          ),
+        };
+      })
+    );
     const result = new Map<string, string[]>();
-    addresses.forEach(address => {
-      address.kitties.forEach(kitty => {
+    addresses.forEach((address) => {
+      address.kitties.forEach((kitty) => {
         if (result.has(kitty)) {
           result.get(kitty).push(address.address);
         } else {
@@ -117,10 +119,8 @@ export class KittyTokenController {
         }
       });
     });
-    return response
-    .status(HttpStatus.OK)
-    .send(Object.fromEntries(result));
-}
+    return response.status(HttpStatus.OK).send(Object.fromEntries(result));
+  }
 
   @Get("/:address")
   async token(@Param("address") address: string) {
