@@ -23,7 +23,6 @@ export class KittyTokenController {
   @Post("/")
   async tokens(@Res() response: Response, @Body() body: any) {
     await this.kittyTokenMarketContractManagerService.infos();
-    console.log(body)
     if (body.id === undefined) {
       if (body.limit === undefined || body.state === undefined)
         return response.status(HttpStatus.BAD_REQUEST).send();
@@ -40,7 +39,9 @@ export class KittyTokenController {
                   )
               )
             )
-          ).filter((token) => body.author === undefined || token.artist === body.author)
+          ).filter(
+            (token) => body.author === undefined || token.artist === body.author
+          )
         )
       );
     }
@@ -55,8 +56,9 @@ export class KittyTokenController {
 
   @Get("/artists")
   async artists(@Res() response: Response) {
-    console.log()
-    return response.status(HttpStatus.OK).send(await this.kittyTokenMarketContractManagerService.artists()); 
+    return response
+      .status(HttpStatus.OK)
+      .send(await this.kittyTokenMarketContractManagerService.artists());
   }
 
   @Get("/owners")

@@ -23,7 +23,6 @@ export class KittyTokenContractManagerService {
   }
 
   async getInfo(address: string) {
-    //TODO: get token holders address with quantity
     //TODO: get the holders domaine name
     const token = await this.info(address);
     return {
@@ -32,6 +31,7 @@ export class KittyTokenContractManagerService {
       img: await this.getImage(address),
       artist: token.artist,
       isApply: await this.isTokenApplied(address),
+      owners : await this.allOwners(address),
     };
   }
 
