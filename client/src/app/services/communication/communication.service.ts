@@ -26,6 +26,10 @@ export class CommunicationService {
     return this.http.get(`${this.baseUrl}/tokens/artists`, { observe: 'response' });
   }
 
+  getAllOwners(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/tokens/owners`, { observe: 'response' });
+  }
+
   private initializeTokensPage(filter: { author: string, owner: string} | undefined, limit: number = 30, state: number = 0): Observable<any> {
     return this.http
       .post(
