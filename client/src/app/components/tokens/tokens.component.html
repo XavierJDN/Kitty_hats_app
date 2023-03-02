@@ -1,6 +1,6 @@
 <app-search-bar (author)="updateFocus(enumFocus.Author, $event)" (owner)="updateFocus(enumFocus.Owner, $event)"></app-search-bar>
 <mat-grid-list cols="3" rowHeight="25em">
-    <mat-grid-tile *ngFor="let token of tokens if ">
+    <mat-grid-tile *ngFor="let token of tokens">
         <app-token [token]="token"></app-token>
     </mat-grid-tile>
 </mat-grid-list>

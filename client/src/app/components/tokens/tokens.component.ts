@@ -3,7 +3,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { Token } from '@common/token';
 import { Focus } from '@app/enum/focus';
-import { AvailableFilterService } from '@app/services/avalaible-filter/available-filter.service';
 @Component({
   selector: 'app-tokens',
   templateUrl: './tokens.component.html',
@@ -16,10 +15,7 @@ export class TokensComponent implements OnInit {
   isNext = true;
   focus: { owner: string; author: string } = { owner: '', author: '' };
   enumFocus: typeof Focus = Focus;
-  constructor(
-    private communication: CommunicationService,
-    private availableToken: AvailableFilterService
-  ) {}
+  constructor(private communication: CommunicationService) {}
 
   ngOnInit(): void {
     this.infoTokens(undefined);
@@ -50,8 +46,21 @@ export class TokensComponent implements OnInit {
     this.communication
       .getTokens(isNewFocus ? this.focus : undefined, isNext)
       .subscribe((tokens: HttpResponse<any>) => {
-        this.tokens = tokens.body.page;
-        this.communication.pageId = !this.communication.pageId ? tokens.body.id : this.communication.pageId;
+        this.tokens = tokens.body.page.map((token: Token) =>
+          token.owners.map((owner) => {
+            return {
+              ...owner,
+              contractAddress: token.address,
+              name: token.name,
+              img: token.img,
+              artist: token.artist,
+            };
+          })
+        );
+        console.log(this.tokens);
+        this.communication.pageId = !this.communication.pageId
+          ? tokens.body.id
+          : this.communication.pageId;
         this.isPrevious = tokens.body.isPrevious;
         this.isNext = tokens.body.isNext;
       });

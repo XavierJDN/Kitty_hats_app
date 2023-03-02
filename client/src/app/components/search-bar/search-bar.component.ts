@@ -15,7 +15,7 @@ export class SearchBarComponent {
 
   authors: string[] = [];
   owners: string[] = [];
-  filter = { owner: '', author: '' };
+  filter = { owner: undefined, author: undefined };
 
   form: FormGroup = new FormGroup({
     author: new FormControl(''),
@@ -26,20 +26,24 @@ export class SearchBarComponent {
 
   ngOnInit(): void {
     this.getAllAuthors();
+    this.getAllOwners();
   }
 
-  isFormChanged() {
-    return (
-      this.filter.author !== this.form.get('author')?.value ||
-      this.filter.owner !== this.form.get('owner')?.value ||
-      this.filter.author !== '' ||
-      this.filter.owner !== ''
-    );
+  isOwnerChanged() {
+    return this.filter.owner !== this.form.get('owner')?.value;
   }
-
+  isArtistChanged() {
+    return this.filter.author !== this.form.get('author')?.value;
+  }
   updateView() {
-    this.author.emit(this.form.get('author')?.value);
-    this.owner.emit(this.form.get('owner')?.value);
+    if(this.isOwnerChanged()) {
+      this.filter.owner = this.form.get('owner')?.value;
+      this.owner.emit(this.form.get('owner')?.value);
+    }
+    if(this.isArtistChanged()) {
+      this.filter.author = this.form.get('author')?.value;
+      this.author.emit(this.form.get('author')?.value);
+    }
   }
 
   getAllAuthors() {
@@ -48,4 +52,11 @@ export class SearchBarComponent {
       this.authors = response.body.filter((author: string) => author !== undefined && author !== null);
     });
   }
+
+  getAllOwners() {
+    this.communication.getAllOwners().subscribe((response: HttpResponse<any>) => {
+      this.owners = response.body.filter((owner: string) => owner !== undefined && owner !== null);
+    });
+  }
+    
 }
