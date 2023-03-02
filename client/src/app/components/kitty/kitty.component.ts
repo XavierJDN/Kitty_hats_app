@@ -6,5 +6,10 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./kitty.component.scss']
 })
 export class KittyComponent {
-  @Input() kitty = {};
+  @Input() kitty = {
+    address: '',
+    name: '',
+    img: '',
+    owner: '',
+  };
 }
