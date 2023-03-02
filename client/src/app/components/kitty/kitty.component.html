@@ -1,1 +1,9 @@
-<p>kitty works!</p>
+<mat-card>
+<mat-card-header>
+    <mat-card-title>{{kitty.name}}</mat-card-title>
+</mat-card-header>
+<mat-card-content>
+    <img mat-card-image width="200em" height="200em" [src]="kitty.img" alt="kitty image" />
+</mat-card-content>
+<p>{{kitty.owner}}</p>
+</mat-card>
