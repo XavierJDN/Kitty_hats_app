@@ -47,6 +47,31 @@ export class KittyTokenContractManagerService {
 
   async isTokenApplied(token: string) { // TODO: 
     return await (await this.tokenContract(token)).getPastEvents("Apply", { fromBlock: 0, toBlock: "latest" });
+  async allOwners(token: string) {
+    const contract = await this.tokenContract(token);
+    return (await Promise.all(
+      (
+        await contract.getPastEvents("Transfer", {
+          fromBlock: 0,
+          toBlock: "latest",
+        })
+      )
+        .map((event: any) => [event.returnValues._from, event.returnValues._to])
+        .flat()
+        .reduce(
+          (prev: string[], curr: string) =>
+            prev.includes(curr) ? prev : [...prev, curr],
+          []
+        )
+        .map(async (address: string) => {
+          return {
+            address,
+            quantity: parseInt(await contract.methods
+              .balanceOf(address)
+              .call({ from: 0 })),
+          };
+        })
+    )).filter((owner) => owner.quantity > 0);
   }
 
   async getImage(address: string, isAsset: boolean = false) {
