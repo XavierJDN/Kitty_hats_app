@@ -67,29 +67,44 @@ export class KittyTokenController {
     const owners = await Promise.all(
       this.kittyTokenMarketContractManagerService.tokens.map(
         async (token) =>
-          (await this.kittyTokenContractManagerService.getInfo(
-            token.tokenAddress
-          )).owners
+          (
+            await this.kittyTokenContractManagerService.getInfo(
+              token.tokenAddress
+            )
+          ).owners
       )
-    )
+    );
+    return response.status(HttpStatus.OK).send(
+      owners
+        .flat()
+        .reduce(
+          (
+            prev: { address: string; quantity: number }[],
+            curr: { address: string; quantity: number }
+          ) =>
+            prev.find((owner) => owner.address === curr.address) !== undefined
+              ? prev
+              : [...prev, curr],
+          []
+        )
+        .map((owner: any) => owner.address)
+    );
+  }
+
+  @Get("/kitties")
+  async kitties(@Res() response: Response) {
+    await this.kittyTokenMarketContractManagerService.infos();
     return response
       .status(HttpStatus.OK)
       .send(
-        owners
-          .flat()
-          .reduce(
-            (
-              prev: { address: string; quantity: number }[],
-              curr: { address: string; quantity: number }
-            ) =>
-              prev.find(
-                (owner) =>
-                  owner.address === curr.address
-              ) !== undefined
-                ? prev
-                : [...prev, curr],
-            []
-          ).map((owner: any) => owner.address)
+        (await Promise.all(
+          this.kittyTokenMarketContractManagerService.tokens.map(
+            async (token) =>
+              await this.kittyTokenContractManagerService.kitties(
+                token.tokenAddress
+              )
+          )
+        )).flat().reduce((prev: string[], curr: string) => prev.includes(curr) ? prev : [...prev, curr], [])
       );
   }
 

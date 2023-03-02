@@ -30,8 +30,7 @@ export class KittyTokenContractManagerService {
       name: token.name,
       img: await this.getImage(address),
       artist: token.artist,
-      isApply: await this.isTokenApplied(address),
-      owners : await this.allOwners(address),
+      owners: await this.allOwners(address),
     };
   }
 
@@ -45,33 +44,61 @@ export class KittyTokenContractManagerService {
     ).abi;
   }
 
-  async isTokenApplied(token: string) { // TODO: 
-    return await (await this.tokenContract(token)).getPastEvents("Apply", { fromBlock: 0, toBlock: "latest" });
+  async appliedToken(token: string) {
+    return await (
+      await this.tokenContract(token)
+    ).getPastEvents("Apply", { fromBlock: 0, toBlock: "latest" });
+  }
+
+  async removeToken(token: string) {
+    return await (
+      await this.tokenContract(token)
+    ).getPastEvents("Remove", { fromBlock: 0, toBlock: "latest" });
+  }
+
+  async kitties(token: string): Promise<string[]> {
+    const appliedToken = await this.appliedToken(token);
+    const removeToken = await this.removeToken(token);
+    return appliedToken
+      .filter(
+        (appliedEvent: any) =>
+          removeToken.find(
+            (removeEvent: any) => removeEvent.returnValues.kittyId === appliedEvent.returnValues.kittyId
+          ) === undefined
+      )
+      .map((event: any) => event.returnValues.kittyId);
+  }
+
   async allOwners(token: string) {
     const contract = await this.tokenContract(token);
-    return (await Promise.all(
-      (
-        await contract.getPastEvents("Transfer", {
-          fromBlock: 0,
-          toBlock: "latest",
-        })
-      )
-        .map((event: any) => [event.returnValues._from, event.returnValues._to])
-        .flat()
-        .reduce(
-          (prev: string[], curr: string) =>
-            prev.includes(curr) ? prev : [...prev, curr],
-          []
+    return (
+      await Promise.all(
+        (
+          await contract.getPastEvents("Transfer", {
+            fromBlock: 0,
+            toBlock: "latest",
+          })
         )
-        .map(async (address: string) => {
-          return {
-            address,
-            quantity: parseInt(await contract.methods
-              .balanceOf(address)
-              .call({ from: 0 })),
-          };
-        })
-    )).filter((owner) => owner.quantity > 0);
+          .map((event: any) => [
+            event.returnValues._from,
+            event.returnValues._to,
+          ])
+          .flat()
+          .reduce(
+            (prev: string[], curr: string) =>
+              prev.includes(curr) ? prev : [...prev, curr],
+            []
+          )
+          .map(async (address: string) => {
+            return {
+              address,
+              quantity: parseInt(
+                await contract.methods.balanceOf(address).call({ from: 0 })
+              ),
+            };
+          })
+      )
+    ).filter((owner) => owner.quantity > 0);
   }
 
   async getImage(address: string, isAsset: boolean = false) {
@@ -82,7 +109,8 @@ export class KittyTokenContractManagerService {
     const file = await FsManager.find(path, token.assetUrl);
     return {
       src: await FsManager.base64Encode(path + file),
-      format: FsManager.getType(file) === 'svg' ? 'svg+xml' : FsManager.getType(file),
+      format:
+        FsManager.getType(file) === "svg" ? "svg+xml" : FsManager.getType(file),
     };
   }
 }
