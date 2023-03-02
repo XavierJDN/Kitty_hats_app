@@ -4,4 +4,5 @@ export interface Token {
     img: { src: string, format: string};
     artist: string;
     isApply: boolean;
+    owners: { address: string, quantity: number }[];
 }

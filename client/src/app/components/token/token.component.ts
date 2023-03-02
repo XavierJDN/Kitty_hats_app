@@ -15,5 +15,6 @@ export class TokenComponent {
     img: { src: '', format: ''},
     artist: '',
     isApply: false,
+    owners: [],
   };
 }
