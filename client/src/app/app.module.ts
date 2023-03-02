@@ -12,12 +12,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { KittyComponent } from './components/kitty/kitty.component';
 @NgModule({
   declarations: [
     AppComponent,
     TokenComponent,
     TokensComponent,
-    SearchBarComponent
+    SearchBarComponent,
+    KittyComponent
   ],
   imports: [
     BrowserModule,

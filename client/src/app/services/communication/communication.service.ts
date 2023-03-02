@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class CommunicationService {
   private readonly baseUrl = environment.serverUrl;
+  private readonly CryptoKittyApi = 'https://api.cryptokitties.co';
   pageId: string | undefined;
 
   constructor(private readonly http: HttpClient) {}
@@ -28,6 +29,18 @@ export class CommunicationService {
 
   getAllOwners(): Observable<any> {
     return this.http.get(`${this.baseUrl}/tokens/owners`, { observe: 'response' });
+  }
+
+  getOwnerKitty(owner: string): Observable<any> {
+    return  this.http.get(`${this.CryptoKittyApi}/kitties?owner_wallet_address=${owner}`, { observe: 'response' });
+  }
+
+  getKitty(kittyId: string): Observable<any> {
+    return this.http.get(`${this.CryptoKittyApi}/kitties/${kittyId}`, { observe: 'response' });
+  }
+
+  getHatsKitties(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/tokens/kitties`, { observe: 'response' });
   }
 
   private initializeTokensPage(filter: { author: string, owner: string} | undefined, limit: number = 30, state: number = 0): Observable<any> {
