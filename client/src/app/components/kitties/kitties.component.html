@@ -3,3 +3,5 @@
         <app-kitty [kitty]="kitty"></app-kitty>
     </mat-grid-tile>
 </mat-grid-list>
+<button mat-button [disabled]="!this.kittiesManager.isPrevious()" (click)="previousPage()">Previous</button>
+<button mat-button [disabled]="!this.kittiesManager.isNext()" (click)="nextPage()">Next</button>
