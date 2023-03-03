@@ -9,7 +9,7 @@ import { Focus } from '@app/enum/focus';
   styleUrls: ['./tokens.component.scss'],
 })
 export class TokensComponent implements OnInit {
-  tokens: Token[] | null = [];
+  tokens: any[] | null = [];
   id: string | undefined;
   isPrevious = true;
   isNext = true;
@@ -35,7 +35,7 @@ export class TokensComponent implements OnInit {
     this.infoTokens(undefined, true);
   }
 
-  isView(token: Token | null) {
+  isView(token: any) {
     if (token === null) {
       return false;
     }
@@ -46,17 +46,18 @@ export class TokensComponent implements OnInit {
     this.communication
       .getTokens(isNewFocus ? this.focus : undefined, isNext)
       .subscribe((tokens: HttpResponse<any>) => {
+        console.log(tokens);
         this.tokens = tokens.body.page.map((token: Token) =>
           token.owners.map((owner) => {
             return {
-              ...owner,
+              owner,
               contractAddress: token.address,
               name: token.name,
               img: token.img,
               artist: token.artist,
             };
           })
-        );
+        ).flat();
         console.log(this.tokens);
         this.communication.pageId = !this.communication.pageId
           ? tokens.body.id
