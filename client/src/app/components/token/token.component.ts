@@ -9,11 +9,11 @@ import { Token } from '@common/token';
 })
 export class TokenComponent {
   @Input()
-  token: Token = {
-    address: '',
+  token = {
+    contractAddress: '',
     name: '',
-    img: { src: '', format: ''},
+    img: { src: '', format: '' },
     artist: '',
-    owners: [],
+    owner: { address: '', quantity: 0},
   };
 }

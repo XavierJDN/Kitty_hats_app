@@ -21,7 +21,7 @@ export class KittyTokenController {
   ) {}
 
   @Post("/")
-  async tokens(@Res() response: Response, @Body() body: any) {
+  async tokens(@Res() response: Response, @Body() body: { id?: string, limit?: number, state?: number, author?: string, owner?: string, isNext?: boolean }) {
     await this.kittyTokenMarketContractManagerService.infos();
     if (body.id === undefined) {
       if (body.limit === undefined || body.state === undefined)
