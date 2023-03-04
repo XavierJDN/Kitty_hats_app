@@ -8,4 +8,3 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'Kitty-hats-app';
 }
-// TODO: get kitty information on https://cryptokitties.fandom.com/wiki/CryptoKitties_API_(Unofficial)#https://api.cryptokitties.co/

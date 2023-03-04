@@ -5,16 +5,18 @@ import { FsManager } from "../fs_manager/fs_manager.service";
 
 @Injectable()
 export class KittyTokenMarketContractManagerService {
-  private contract: Contract;
   tokens: any[];
     constructor(private contractInteractionService: ContractInteractionService) {
     }
 
   async setContract() {
-    return this.contract = await this.contractInteractionService.getContractInstance("kitty_token_market");
+    return await this.contractInteractionService.getContractInstance("kitty_token_market");
   }
 
   async infos() {
+    if (this.tokens.length !== 0) {
+      return;
+    }
     const listing = JSON.parse((await FsManager.readFile(`../kitty-hats-manifest/build/listing_1.json`)).toString());
     this.tokens = Object.values(Object.values(listing.categories).map((category: any) => category.items)).flat();
   }
