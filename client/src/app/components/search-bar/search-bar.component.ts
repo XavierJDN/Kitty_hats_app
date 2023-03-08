@@ -47,15 +47,14 @@ export class SearchBarComponent {
   }
 
   getAllAuthors() {
-    this.communication.getAllArtists().subscribe((response: HttpResponse<any>) => {
-      console.log(response)
-      this.authors = response.body.filter((author: string) => author !== undefined && author !== null);
+    this.communication.getAllArtists().subscribe((response: HttpResponse<string[]>) => {
+      this.authors = response.body!.filter((author: string) => author !== undefined && author !== null).sort();
     });
   }
 
   getAllOwners() {
-    this.communication.getAllOwners().subscribe((response: HttpResponse<any>) => {
-      this.owners = response.body.filter((owner: string) => owner !== undefined && owner !== null);
+    this.communication.getAllOwners().subscribe((response: HttpResponse<string[]>) => {
+      this.owners = response.body!.filter((owner: string) => owner !== undefined || owner !== null).sort();
     });
   }
     

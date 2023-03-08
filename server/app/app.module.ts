@@ -8,6 +8,7 @@ import { KittyTokenController } from './controllers/kitty_token/kitty_token.cont
 import { KittyTokenContractManagerService } from '@app/services/kitty_token_contract_manager/kitty_token_contract_manager.service';
 import { KittyTokenMarketContractManagerService } from '@app/services/kitty_token_market_contract_manager/kitty_token_market_contract_manager.service';
 import { PageManagerService } from "@app/services/page_manager/page_manager.service";
+import { ContractEventManagerService } from '@app/services/contract_event_manager/contract_event_manager.service';
 
 @Module({
     imports: [
@@ -22,6 +23,6 @@ import { PageManagerService } from "@app/services/page_manager/page_manager.serv
         // MongooseModule.forFeature([]), // create the mogoDB database (shema = { name: string, schema:  <service>})
     ],
     controllers: [KittyTokenController], // all controllers are imported here
-    providers: [PageManagerService, FsManager, ContractInteractionService, KittyContractManagerService, KittyTokenContractManagerService, KittyTokenMarketContractManagerService,Logger],
+    providers: [PageManagerService, FsManager, ContractInteractionService, KittyContractManagerService, KittyTokenContractManagerService, KittyTokenMarketContractManagerService, ContractEventManagerService, Logger],
 })
 export class AppModule {}

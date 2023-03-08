@@ -14,7 +14,7 @@ export class KittyTokenMarketContractManagerService {
   }
 
   async infos() {
-    if (this.tokens.length !== 0) {
+    if (this.tokens !== undefined) {
       return;
     }
     const listing = JSON.parse((await FsManager.readFile(`../kitty-hats-manifest/build/listing_1.json`)).toString());
@@ -22,12 +22,12 @@ export class KittyTokenMarketContractManagerService {
   }
 
   async token(address: string) {
-    if(!this.tokens) await this.infos();
+    await this.infos();
     return this.tokens.find((token: any) => token.tokenAddress === address);
   }
 
   async artists() {
-    if(!this.tokens) await this.infos();
+    await this.infos();
     return this.tokens.map((token: any) => token.artist).reduce((prev: string[], curr: string) => prev.includes(curr) ? prev : [...prev, curr],
       [this.tokens[0].artist]
     );

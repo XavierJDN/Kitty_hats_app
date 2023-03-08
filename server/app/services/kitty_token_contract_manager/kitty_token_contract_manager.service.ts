@@ -3,12 +3,15 @@ import { Injectable } from "@nestjs/common";
 import { FsManager } from "@app/services/fs_manager/fs_manager.service";
 import { access, constants, existsSync } from "fs";
 import { KittyTokenMarketContractManagerService } from "@app/services/kitty_token_market_contract_manager/kitty_token_market_contract_manager.service";
+import { ContractEventManagerService } from "@app/services/contract_event_manager/contract_event_manager.service";
+
 
 @Injectable()
 export class KittyTokenContractManagerService {
   constructor(
     private contractInteractionService: ContractInteractionService,
-    private kittyTokenMarketContractManagerService: KittyTokenMarketContractManagerService
+    private kittyTokenMarketContractManagerService: KittyTokenMarketContractManagerService,
+    private contractEventManagerService: ContractEventManagerService
   ) {}
 
   async tokenContract(address: string) {
@@ -44,61 +47,60 @@ export class KittyTokenContractManagerService {
     ).abi;
   }
 
-  async appliedToken(token: string) {
-    return await (
-      await this.tokenContract(token)
-    ).getPastEvents("Apply", { fromBlock: 0, toBlock: "latest" });
-  }
-
-  async removeToken(token: string) {
-    return await (
-      await this.tokenContract(token)
-    ).getPastEvents("Remove", { fromBlock: 0, toBlock: "latest" });
-  }
-
   async kitties(token: string): Promise<string[]> {
-    const appliedToken = await this.appliedToken(token);
-    const removeToken = await this.removeToken(token);
-    return appliedToken
+    const events = await this.getKittiesEvents(token);
+    return events.applied
       .filter(
         (appliedEvent: any) =>
-          removeToken.find(
-            (removeEvent: any) => removeEvent.returnValues.kittyId === appliedEvent.returnValues.kittyId
+          events.remove.find(
+            (removeEvent: any) =>
+              removeEvent.returnValues.kittyId ===
+              appliedEvent.returnValues.kittyId
           ) === undefined
       )
       .map((event: any) => event.returnValues.kittyId);
   }
 
+  async getKittiesEvents(token: string) {
+    await this.contractEventManagerService.setEvent(
+      await this.tokenContract(token)
+    );
+    return {
+      applied: this.contractEventManagerService.getEvent(token, "Apply"),
+      remove: this.contractEventManagerService.getEvent(token, "Remove"),
+    };
+  }
+
   async allOwners(token: string) {
+    return (await this.getOwnersBalance(token)).filter(
+      (owner) => owner.quantity > 0
+    );
+  }
+
+  async getOwnersBalance(token: string) {
     const contract = await this.tokenContract(token);
-    return (
-      await Promise.all(
-        (
-          await contract.getPastEvents("Transfer", {
-            fromBlock: 0,
-            toBlock: "latest",
-          })
-        )
-          .map((event: any) => [
-            event.returnValues._from,
-            event.returnValues._to,
-          ])
-          .flat()
-          .reduce(
-            (prev: string[], curr: string) =>
-              prev.includes(curr) ? prev : [...prev, curr],
-            []
-          )
-          .map(async (address: string) => {
-            return {
-              address,
-              quantity: parseInt(
-                await contract.methods.balanceOf(address).call({ from: 0 })
-              ),
-            };
-          })
-      )
-    ).filter((owner) => owner.quantity > 0);
+    return (await this.getTransferEvents(token)).map(async (address: string) => {
+      return {
+        address,
+        quantity: parseInt(
+          await contract.methods.balanceOf(address).call({ from: 0 })
+        ),
+      };
+    });
+  }
+
+  async getTransferEvents(token: string) {
+    await this.contractEventManagerService.setEvent(await this.tokenContract(token));
+    const events = this.contractEventManagerService.getEvent(token, 'Transfer');
+    if(events === undefined) return [];
+    return events
+      .map((event: any) => [event.returnValues._from, event.returnValues._to])
+      .flat()
+      .reduce(
+        (prev: string[], curr: string) =>
+          prev.includes(curr) ? prev : [...prev, curr],
+        []
+      );
   }
 
   async getImage(address: string, isAsset: boolean = false) {
