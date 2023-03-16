@@ -1,47 +1,44 @@
 import { Injectable } from "@nestjs/common";
-
+import { Contract } from "web3-eth-contract";
 @Injectable()
 export class ContractEventManagerService {
   events = new Map<string, Map<string, any>>();
 
   async setEvent(
-    contract: any,
+    address: string,
+    contract: Contract,
     types: string[] = ["Transfer", "Apply", "Remove"]
   ) {
-    if (this.events.has(contract.options.address)) {
+    if (this.events.has(address)) {
       return;
     }
-    console.log(contract.options.address + " should be called only before get");
-    this.events.set(contract.options.address, new Map());
-    const events = await Promise.all(types.map(async (type: string) => await this.pastEvent(type, contract)));
-    types.forEach((type: string, i: number) => this.events.get(contract.options.address).set(type, events[i]));
+    this.events.set(address, new Map());
+    await this.getAllPastsEvents(contract, address, types);
     await this.subscribe(contract);
   }
 
   getEvent(address: string, type: string) {
-    console.log(this.events.get(address));
-    console.log(
-      address +
-        " should be called only after set " +
-        this.events.get(address).get(type)
-    );
-    return this.events.get(address).get(type);
+    const event = this.events.get(address)?.get(type);
+    return event === undefined ? [] : event;
   }
 
   getAllEvents(address: string) {
     return this.events.get(address);
   }
 
-  private async pastEvent(type: string, contract: any) {
-    return contract
-      .getPastEvents(type, { fromBlock: 0, toBlock: "latest" })
-      .then((events: any) => {
-        console.log(contract.options.address + ' should cal to set the result of past event ' + events)
-        events === undefined ? [] : events;
+  private async getAllPastsEvents(contract: Contract, address: string, types:string[] = ["Transfer", "Apply", "Remove"]) {
+    return await contract.getPastEvents('allEvents',{ fromBlock: 0, toBlock: "latest" }, (error: any, events: any) => {
+      if (error) {
+        return;
+      }
+      types.forEach((type) => {
+        this.events.get(address).set(type, events.filter((event: any) => event.event === type));
       });
+      return events;
+    }).catch((error: any) => {});
   }
 
-  private async subscribe(contract: any) {
+  private async subscribe(contract: Contract) {
     contract.events.allEvents({ fromBlock: "latest" }, (error: any, event: any) => {
       if (error) {
         return;
