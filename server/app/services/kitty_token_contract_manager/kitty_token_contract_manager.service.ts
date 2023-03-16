@@ -63,6 +63,7 @@ export class KittyTokenContractManagerService {
 
   async getKittiesEvents(token: string) {
     await this.contractEventManagerService.setEvent(
+      token,
       await this.tokenContract(token)
     );
     return {
@@ -79,18 +80,18 @@ export class KittyTokenContractManagerService {
 
   async getOwnersBalance(token: string) {
     const contract = await this.tokenContract(token);
-    return (await this.getTransferEvents(token)).map(async (address: string) => {
+    return Promise.all((await this.getTransferEvents(token)).map(async (address: string) => {
       return {
         address,
         quantity: parseInt(
           await contract.methods.balanceOf(address).call({ from: 0 })
         ),
       };
-    });
+    }));
   }
 
   async getTransferEvents(token: string) {
-    await this.contractEventManagerService.setEvent(await this.tokenContract(token));
+    await this.contractEventManagerService.setEvent(token, await this.tokenContract(token));
     const events = this.contractEventManagerService.getEvent(token, 'Transfer');
     if(events === undefined) return [];
     return events
