@@ -5,7 +5,6 @@ import { access, constants, existsSync } from "fs";
 import { KittyTokenMarketContractManagerService } from "@app/services/kitty_token_market_contract_manager/kitty_token_market_contract_manager.service";
 import { ContractEventManagerService } from "@app/services/contract_event_manager/contract_event_manager.service";
 
-
 @Injectable()
 export class KittyTokenContractManagerService {
   constructor(
@@ -74,26 +73,37 @@ export class KittyTokenContractManagerService {
 
   async allOwners(token: string) {
     return (await this.getOwnersBalance(token)).filter(
-      (owner) => owner.quantity > 0
+      (owner: { address: string; quantity: number }) => owner.quantity > 0
     );
   }
 
   async getOwnersBalance(token: string) {
-    const contract = await this.tokenContract(token);
-    return Promise.all((await this.getTransferEvents(token)).map(async (address: string) => {
-      return {
-        address,
-        quantity: parseInt(
-          await contract.methods.balanceOf(address).call({ from: 0 })
-        ),
-      };
-    }));
+    const events = this.contractEventManagerService.getEvent(token, "Transfer");
+    const owners = await this.getTransferEvents(token);
+    return owners.map((address: string) => {
+      const remove = events
+        .filter((event: any) => event.returnValues._from === address)
+        .reduce(
+          (prev: any, curr: any) => prev + parseInt(curr.returnValues._value),
+          0
+        );
+      const add = events
+        .filter((event: any) => event.returnValues._to === address)
+        .reduce(
+          (prev: any, curr: any) => prev + parseInt(curr.returnValues._value),
+          0
+        );
+      return { address, quantity: add - remove };
+    });
   }
 
   async getTransferEvents(token: string) {
-    await this.contractEventManagerService.setEvent(token, await this.tokenContract(token));
-    const events = this.contractEventManagerService.getEvent(token, 'Transfer');
-    if(events === undefined) return [];
+    await this.contractEventManagerService.setEvent(
+      token,
+      await this.tokenContract(token)
+    );
+    const events = this.contractEventManagerService.getEvent(token, "Transfer");
+    if (events === undefined) return [];
     return events
       .map((event: any) => [event.returnValues._from, event.returnValues._to])
       .flat()

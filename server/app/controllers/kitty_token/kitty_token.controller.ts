@@ -47,7 +47,7 @@ export class KittyTokenController {
                 async (token) =>
                   await this.kittyTokenContractManagerService.getInfo(
                     token.tokenAddress
-                  )
+                  ) 
               )
             )
           )
@@ -154,5 +154,10 @@ export class KittyTokenController {
   @Get("/contract/:address")
   async contract(@Param("address") address: string) {
     return await this.kittyTokenContractManagerService.tokenContract(address);
+  }
+  @Get('kitties/:address')
+  async kittiesOfToken(@Param('address') address: string) {
+    const tokens = this.kittyTokenContractManagerService.kitties(address);
+    return 
   }
 }

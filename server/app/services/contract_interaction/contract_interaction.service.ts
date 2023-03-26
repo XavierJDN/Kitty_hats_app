@@ -10,7 +10,7 @@ export class ContractInteractionService {
 
   constructor() {
     if(!this.web3){
-      this.web3 = new Web3('https://mainnet.infura.io/v3/971ed22e4e2e4276b37166adebf4b1ac');
+      this.web3 = new Web3('https://eth-mainnet.g.alchemy.com/v2/rJ2VIc2146pTb-pkD3vVRGmS9--T8iOz');
       this.web3.eth.transactionConfirmationBlocks = 30;
     }
     if(!Contract.currentProvider){
