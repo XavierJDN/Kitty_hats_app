@@ -81,19 +81,13 @@ export class KittyTokenContractManagerService {
     const events = this.contractEventManagerService.getEvent(token, "Transfer");
     const owners = await this.getTransferEvents(token);
     return owners.map((address: string) => {
-      const remove = events
-        .filter((event: any) => event.returnValues._from === address)
+      const quantity = events
+        .filter((event: any) => event.returnValues._from === address || event.returnValues._to === address)
         .reduce(
-          (prev: any, curr: any) => prev + parseInt(curr.returnValues._value),
+          (prev: number, curr: any) => prev + ((curr.returnValues._to === address) ? 1 : -1) * parseInt(curr.returnValues._value),
           0
         );
-      const add = events
-        .filter((event: any) => event.returnValues._to === address)
-        .reduce(
-          (prev: any, curr: any) => prev + parseInt(curr.returnValues._value),
-          0
-        );
-      return { address, quantity: add - remove };
+      return { address, quantity };
     });
   }
 
