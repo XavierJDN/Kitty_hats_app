@@ -123,31 +123,12 @@ export class KittyTokenController {
   @Get("/kitties")
   async kitties(@Res() response: Response) {
     await this.kittyTokenMarketContractManagerService.infos();
-    const addresses = await Promise.all(
-      this.kittyTokenMarketContractManagerService.tokens.map(async (token) => {
-        return {
-          address: token.tokenAddress,
-          kitties: await this.kittyTokenContractManagerService.kitties(
-            token.tokenAddress
-          ),
-        };
-      })
-    );
-    const result = new Map<string, string[]>();
-    addresses.forEach((address) => {
-      address.kitties.forEach((kitty) => {
-        if (result.has(kitty)) {
-          result.get(kitty).push(address.address);
-        } else {
-          result.set(kitty, [address.address]);
-        }
-      });
-    });
-    return response.status(HttpStatus.OK).send(Object.fromEntries(result));
+    return response.status(HttpStatus.OK).send(Object.fromEntries(await this.kittyTokenContractManagerService.getAllKitties()));
   }
 
   @Get("/:address")
   async token(@Param("address") address: string) {
+    await this.kittyTokenMarketContractManagerService.infos();
     return await this.kittyTokenContractManagerService.getInfo(address);
   }
 
@@ -155,9 +136,11 @@ export class KittyTokenController {
   async contract(@Param("address") address: string) {
     return await this.kittyTokenContractManagerService.tokenContract(address);
   }
+      
   @Get('kitties/:address')
-  async kittiesOfToken(@Param('address') address: string) {
-    const tokens = this.kittyTokenContractManagerService.kitties(address);
-    return 
+  async kittiesOfToken(@Param('address') address: string, @Res() response: Response) {
+    await this.kittyTokenMarketContractManagerService.infos();
+    const tokens = await this.kittyTokenContractManagerService.getKitty(address);
+    return response.status(HttpStatus.OK).send(tokens);
   }
 }

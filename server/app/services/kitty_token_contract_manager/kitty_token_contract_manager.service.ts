@@ -24,13 +24,13 @@ export class KittyTokenContractManagerService {
     return await this.kittyTokenMarketContractManagerService.token(token);
   }
 
-  async getInfo(address: string) {
+  async getInfo(address: string, isAsset: boolean = false) {
     //TODO: get the holders domaine name
     const token = await this.info(address);
     return {
       address: token.tokenAddress,
       name: token.name,
-      img: await this.getImage(address),
+      img: await this.getImage(address, isAsset),
       artist: token.artist,
       owners: await this.allOwners(address),
     };
@@ -58,6 +58,39 @@ export class KittyTokenContractManagerService {
           ) === undefined
       )
       .map((event: any) => event.returnValues.kittyId);
+  }
+
+  async allKitties() {
+    return await Promise.all(
+      this.kittyTokenMarketContractManagerService.tokens.map(async (token) => {
+        return {
+          address: token.tokenAddress,
+          kitties: await this.kitties(
+            token.tokenAddress
+          ),
+        };
+      })
+    );
+  }
+
+  async getAllKitties() {
+    const addresses = await this.allKitties();
+    const result = new Map<string, any[]>();
+    for (const address of addresses) {
+      for(const kitty of address.kitties) {
+        const lastAppliedEvent = (await this.getKittiesEvents(address.address)).applied.filter((event:any) => event.returnValues.kittyId === kitty).at(-1);
+        if (result.has(kitty)) {
+          result.get(kitty).push({ blockNumber: lastAppliedEvent.blockNumber, address: address.address });
+        } else {
+          result.set(kitty, [{ blockNumber: lastAppliedEvent.blockNumber, address: address.address }]);
+        }
+      }
+    }
+    return result;
+  }
+
+  async getKitty(kitty: string) {
+    return (await this.getAllKitties()).get(kitty);
   }
 
   async getKittiesEvents(token: string) {
