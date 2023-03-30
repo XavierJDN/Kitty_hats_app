@@ -1,6 +1,6 @@
 <mat-grid-list cols="3" rowHeight="25em">
     <mat-grid-tile *ngFor="let kitty of this.kitties">
-        <app-kitty [kitty]="kitty"></app-kitty>
+        <app-kitty (click)="openDetails(kitty.address)" [kitty]="kitty"></app-kitty>
     </mat-grid-tile>
 </mat-grid-list>
 <button mat-button [disabled]="!this.kittiesManager.isPrevious()" (click)="previousPage()">Previous</button>
