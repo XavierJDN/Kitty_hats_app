@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   Res,
 } from "@nestjs/common";
 import { Response } from "express";
@@ -127,9 +128,10 @@ export class KittyTokenController {
   }
 
   @Get("/:address")
-  async token(@Param("address") address: string) {
+  async token(@Param("address") address: string, @Query("isAsset") isAsset: boolean) {
+    if (isAsset === undefined) isAsset = false;
     await this.kittyTokenMarketContractManagerService.infos();
-    return await this.kittyTokenContractManagerService.getInfo(address);
+    return await this.kittyTokenContractManagerService.getInfo(address, isAsset);
   }
 
   @Get("/contract/:address")
@@ -141,6 +143,7 @@ export class KittyTokenController {
   async kittiesOfToken(@Param('address') address: string, @Res() response: Response) {
     await this.kittyTokenMarketContractManagerService.infos();
     const tokens = await this.kittyTokenContractManagerService.getKitty(address);
+    if(tokens === undefined) return response.status(HttpStatus.NOT_FOUND).send();
     return response.status(HttpStatus.OK).send(tokens);
   }
 }

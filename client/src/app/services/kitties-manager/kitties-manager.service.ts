@@ -22,7 +22,6 @@ export class KittiesManagerService {
       this.communication
         .getKitty(kitty)
         .subscribe((response: HttpResponse<any>) => {
-          console.log(response.body);
           this.$kitty.next({
             name: response.body.name as string,
             address: kitty,

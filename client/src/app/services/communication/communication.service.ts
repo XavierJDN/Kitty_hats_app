@@ -43,6 +43,14 @@ export class CommunicationService {
     return this.http.get(`${this.baseUrl}/tokens/kitties`, { observe: 'response' });
   }
 
+  getHatsKitty(kittyId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/tokens/kitties/${kittyId}`, { observe: 'response' });
+  }
+
+  getToken(tokenAddress: string, isAsset: boolean): Observable<any> {
+    return this.http.get(`${this.baseUrl}/tokens/${tokenAddress}?isAsset=${isAsset}`, { observe: 'response' });
+  }
+
   private initializeTokensPage(filter: { author: string, owner: string} | undefined, limit: number = 30, state: number = 0): Observable<any> {
     return this.http
       .post(

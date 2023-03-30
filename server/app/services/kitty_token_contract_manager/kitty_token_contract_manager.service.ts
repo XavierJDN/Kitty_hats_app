@@ -80,9 +80,9 @@ export class KittyTokenContractManagerService {
       for(const kitty of address.kitties) {
         const lastAppliedEvent = (await this.getKittiesEvents(address.address)).applied.filter((event:any) => event.returnValues.kittyId === kitty).at(-1);
         if (result.has(kitty)) {
-          result.get(kitty).push({ blockNumber: lastAppliedEvent.blockNumber, address: address.address });
+          result.get(kitty).push({ block: lastAppliedEvent.blockNumber, address: address.address });
         } else {
-          result.set(kitty, [{ blockNumber: lastAppliedEvent.blockNumber, address: address.address }]);
+          result.set(kitty, [{ block: lastAppliedEvent.blockNumber, address: address.address }]);
         }
       }
     }
