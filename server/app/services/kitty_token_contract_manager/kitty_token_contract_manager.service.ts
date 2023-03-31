@@ -65,9 +65,7 @@ export class KittyTokenContractManagerService {
       this.kittyTokenMarketContractManagerService.tokens.map(async (token) => {
         return {
           address: token.tokenAddress,
-          kitties: await this.kitties(
-            token.tokenAddress
-          ),
+          kitties: await this.kitties(token.tokenAddress),
         };
       })
     );
@@ -77,12 +75,23 @@ export class KittyTokenContractManagerService {
     const addresses = await this.allKitties();
     const result = new Map<string, any[]>();
     for (const address of addresses) {
-      for(const kitty of address.kitties) {
-        const lastAppliedEvent = (await this.getKittiesEvents(address.address)).applied.filter((event:any) => event.returnValues.kittyId === kitty).at(-1);
+      for (const kitty of address.kitties) {
+        const lastAppliedEvent = (
+          await this.getKittiesEvents(address.address)
+        ).applied
+          .filter((event: any) => event.returnValues.kittyId === kitty)
+          .at(-1);
         if (result.has(kitty)) {
-          result.get(kitty).push({ block: lastAppliedEvent.blockNumber, address: address.address });
+          result
+            .get(kitty)
+            .push({
+              block: lastAppliedEvent.blockNumber,
+              address: address.address,
+            });
         } else {
-          result.set(kitty, [{ block: lastAppliedEvent.blockNumber, address: address.address }]);
+          result.set(kitty, [
+            { block: lastAppliedEvent.blockNumber, address: address.address },
+          ]);
         }
       }
     }
@@ -111,13 +120,21 @@ export class KittyTokenContractManagerService {
   }
 
   async getOwnersBalance(token: string) {
+    this.contractEventManagerService.setEvent(token, await this.tokenContract(token));
     const events = this.contractEventManagerService.getEvent(token, "Transfer");
     const owners = await this.getTransferEvents(token);
     return owners.map((address: string) => {
       const quantity = events
-        .filter((event: any) => event.returnValues._from === address || event.returnValues._to === address)
+        .filter(
+          (event: any) =>
+            event.returnValues._from === address ||
+            event.returnValues._to === address
+        )
         .reduce(
-          (prev: number, curr: any) => prev + ((curr.returnValues._to === address) ? 1 : -1) * parseInt(curr.returnValues._value),
+          (prev: number, curr: any) =>
+            prev +
+            (curr.returnValues._to === address ? 1 : -1) *
+              parseInt(curr.returnValues._value),
           0
         );
       return { address, quantity };
@@ -146,11 +163,26 @@ export class KittyTokenContractManagerService {
     const path = `../kitty-hats-manifest/build/${
       isAsset ? "asset" : "preview"
     }/`;
+    const pattern = { index: "dada", file: "easel.svg" };
     const file = await FsManager.find(path, token.assetUrl);
+    const data = await FsManager.base64Encode(path + file);
+    const type = FsManager.getType(file);
+    if (isAsset) {
+      return {
+        src: token.assetUrl.toLowerCase().includes(pattern.index)
+          ? [data, await FsManager.base64Encode(path + pattern.file)]
+          : [data],
+        format: token.assetUrl.toLowerCase().includes(pattern.index) ? [
+          type === "svg" ? "svg+xml" : type,
+          FsManager.getType(pattern.file) === "svg"
+            ? "svg+xml"
+            : FsManager.getType(pattern.file),
+        ] : [type === "svg" ? "svg+xml" : type],
+      };
+    }
     return {
-      src: await FsManager.base64Encode(path + file),
-      format:
-        FsManager.getType(file) === "svg" ? "svg+xml" : FsManager.getType(file),
+      src: data,
+      format: type === "svg" ? "svg+xml" : type,
     };
   }
 }

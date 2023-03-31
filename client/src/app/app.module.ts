@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { KittyComponent } from './components/kitty/kitty.component';
 import { KittiesComponent } from './components/kitties/kitties.component';
-import { KittyHatComponent } from './kitty-hat/kitty-hat.component';
+import { KittyHatComponent } from './components/kitty-hat/kitty-hat.component';
 @NgModule({
   declarations: [
     AppComponent,

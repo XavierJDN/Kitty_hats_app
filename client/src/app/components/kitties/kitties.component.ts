@@ -1,7 +1,7 @@
 import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Kitty } from '@app/interface/kitty';
-import { KittyHatComponent } from '@app/kitty-hat/kitty-hat.component';
+import { KittyHatComponent } from '@app/components/kitty-hat/kitty-hat.component';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { KittiesManagerService } from '@app/services/kitties-manager/kitties-manager.service';
 import { MatDialog } from '@angular/material/dialog';
