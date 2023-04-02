@@ -47,11 +47,15 @@ export class KittyHatComponent implements OnInit {
               ...tokenData.body
             });
             this.sortByBlock();
+            console.log(this.tokens);
           });
         });
       });
   }
 
+  isTokenAsSpec(token: any, name: string){
+    return token.class.includes(name);
+  }
   sortByBlock(){
     this.tokens.sort((curr, prev) => {
       return curr.block - prev.block;

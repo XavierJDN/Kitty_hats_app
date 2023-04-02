@@ -1,8 +1,23 @@
 <mat-card>
-    <mat-card-content>
-    <img mat-card-image [src]="kittyHat.img" alt="kitty image" />
-    <ng-container *ngFor="let token of tokens; index as i" width="400" height="400">
-        <img [src]="'data:image/' + token.img.format + ';base64,' + token.img.src" class="token" [ngStyle]="{'z-index': i}" width="300px" height="300px"/>
+  <mat-card-content>
+    <img
+      mat-card-image
+      [src]="kittyHat.img"
+      alt="kitty image"
+      width="300px"
+      height="300px"
+    />
+    <ng-container *ngFor="let token of tokens; index as i">
+      <ng-container *ngFor="let img of token.img">
+        <img
+          [src]="'data:image/' + img.format + ';base64,' + img.src"
+          class="token"
+          [ngClass]="{'dada': isTokenAsSpec(img, 'dada')}"
+          [ngStyle]="{ 'z-index': i }"
+          width="300px"
+          height="300px"
+        />
+      </ng-container>
     </ng-container>
-    </mat-card-content>
+  </mat-card-content>
 </mat-card>
