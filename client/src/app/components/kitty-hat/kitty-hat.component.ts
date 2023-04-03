@@ -31,6 +31,7 @@ export class KittyHatComponent implements OnInit {
     .getKitty(this.data.address)
     .subscribe((response: HttpResponse<any>) => {
       this.kittyHat = {
+        bg: response.body.background_color,
         name: response.body.name as string,
         address: this.data.address,
         img: response.body.image_url,

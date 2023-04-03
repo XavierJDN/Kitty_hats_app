@@ -6,6 +6,7 @@
       alt="kitty image"
       width="300px"
       height="300px"
+      [ngStyle]="{ 'background-color': kittyHat.bg }"
     />
     <ng-container *ngFor="let token of tokens; index as i">
       <ng-container *ngFor="let img of token.img">
