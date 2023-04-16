@@ -1,7 +1,6 @@
 import { ContractInteractionService } from "@app/services/contract_interaction/contract_interaction.service";
 import { Injectable } from "@nestjs/common";
 import { FsManager } from "@app/services/fs_manager/fs_manager.service";
-import { access, constants, existsSync } from "fs";
 import { KittyTokenMarketContractManagerService } from "@app/services/kitty_token_market_contract_manager/kitty_token_market_contract_manager.service";
 import { ContractEventManagerService } from "@app/services/contract_event_manager/contract_event_manager.service";
 
@@ -15,18 +14,18 @@ export class KittyTokenContractManagerService {
 
   async tokenContract(address: string) {
     return new this.contractInteractionService.web3.eth.Contract(
-      await this.getContractABI((await this.info(address)).contract),
+      await this.getContractABI(this.info(address).contract),
       address
     );
   }
 
-  private async info(token: string) {
-    return await this.kittyTokenMarketContractManagerService.token(token);
+  private info(token: string) {
+    return this.kittyTokenMarketContractManagerService.token(token);
   }
 
   async getInfo(address: string, isAsset: boolean = false) {
     //TODO: get the holders domaine name
-    const token = await this.info(address);
+    const token = this.info(address);
     return {
       address: token.tokenAddress,
       name: token.name,
@@ -71,8 +70,17 @@ export class KittyTokenContractManagerService {
     );
   }
 
-  async getAllKitties() {
-    const addresses = await this.allKitties();
+  async getAllKitties(category?: string) {
+    const tokens = await this.allKitties();
+    let addresses = [];
+    if (category === undefined){
+      addresses = tokens;
+    } else {
+        const categoryList = await this.kittyTokenMarketContractManagerService.categoryTokens(category);
+        addresses = tokens.filter(
+            (token) => categoryList.includes(token.address));
+
+    }
     const result = new Map<string, any[]>();
     for (const address of addresses) {
       for (const kitty of address.kitties) {
@@ -97,7 +105,7 @@ export class KittyTokenContractManagerService {
   }
 
   async getKitty(kitty: string) {
-    return (await this.getAllKitties()).get(kitty);
+    return (await this.getAllKitties(undefined)).get(kitty);
   }
 
   async getKittiesEvents(token: string) {
@@ -166,25 +174,38 @@ export class KittyTokenContractManagerService {
     }/`;
     const pattern = { index: "dada", file: "easel.svg" };
     const file = await FsManager.find(path, token.assetUrl);
-    const placard = { index: "placard", file: "dada-placard-"+ file.split('-').at(-1).split(".")[0] + ".svg" };
+    const placard = {
+      index: "placard",
+      file: "dada-placard-" + file.split("-").at(-1).split(".")[0] + ".svg",
+    };
     const data = await FsManager.base64Encode(path + file);
     const type = FsManager.getType(file);
     if (isAsset) {
       return token.assetUrl.toLowerCase().includes(pattern.index)
         ? [
-          {
-            src: await FsManager.base64Encode(path + pattern.file),
-            format: FsManager.getType(pattern.file) === "svg" ? "svg+xml" : FsManager.getType(pattern.file),
-            class: []
-          },
-          {
-            src: await FsManager.base64Encode(path + placard.file),
-            format: FsManager.getType(placard.file) === "svg" ? "svg+xml" : FsManager.getType(placard.file),
-            class: []
-          },
-          { src: data, format: type === "svg" ? "svg+xml" : type, class: ['dada']}
+            {
+              src: await FsManager.base64Encode(path + pattern.file),
+              format:
+                FsManager.getType(pattern.file) === "svg"
+                  ? "svg+xml"
+                  : FsManager.getType(pattern.file),
+              class: [],
+            },
+            {
+              src: await FsManager.base64Encode(path + placard.file),
+              format:
+                FsManager.getType(placard.file) === "svg"
+                  ? "svg+xml"
+                  : FsManager.getType(placard.file),
+              class: [],
+            },
+            {
+              src: data,
+              format: type === "svg" ? "svg+xml" : type,
+              class: ["dada"],
+            },
           ]
-        : [{ src: data, format: type === "svg" ? "svg+xml" : type , class: []}];
+        : [{ src: data, format: type === "svg" ? "svg+xml" : type, class: [] }];
     }
     return {
       src: data,

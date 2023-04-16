@@ -48,7 +48,7 @@ export class KittyTokenController {
                 async (token) =>
                   await this.kittyTokenContractManagerService.getInfo(
                     token.tokenAddress
-                  ) 
+                  )
               )
             )
           )
@@ -120,30 +120,48 @@ export class KittyTokenController {
         .map((owner: any) => owner.address)
     );
   }
-
+  //get dada kitty with query option
   @Get("/kitties")
-  async kitties(@Res() response: Response) {
+  async kitties(@Query('category') category: string, @Res() response: Response) {
     await this.kittyTokenMarketContractManagerService.infos();
-    return response.status(HttpStatus.OK).send(Object.fromEntries(await this.kittyTokenContractManagerService.getAllKitties()));
+    return response
+      .status(HttpStatus.OK)
+      .send(
+        Object.fromEntries(
+          await this.kittyTokenContractManagerService.getAllKitties(category)
+        )
+      );
   }
 
   @Get("/:address")
-  async token(@Param("address") address: string, @Query("isAsset") isAsset: boolean) {
+  async token(
+    @Param("address") address: string,
+    @Query("isAsset") isAsset: boolean
+  ) {
     if (isAsset === undefined) isAsset = false;
     await this.kittyTokenMarketContractManagerService.infos();
-    return await this.kittyTokenContractManagerService.getInfo(address, isAsset);
+    return await this.kittyTokenContractManagerService.getInfo(
+      address,
+      isAsset
+    );
   }
 
   @Get("/contract/:address")
   async contract(@Param("address") address: string) {
     return await this.kittyTokenContractManagerService.tokenContract(address);
   }
-      
-  @Get('kitties/:address')
-  async kittiesOfToken(@Param('address') address: string, @Res() response: Response) {
+
+  @Get("kitties/:address")
+  async kittiesOfToken(
+    @Param("address") address: string,
+    @Res() response: Response
+  ) {
     await this.kittyTokenMarketContractManagerService.infos();
-    const tokens = await this.kittyTokenContractManagerService.getKitty(address);
-    if(tokens === undefined) return response.status(HttpStatus.NOT_FOUND).send();
+    const tokens = await this.kittyTokenContractManagerService.getKitty(
+      address
+    );
+    if (tokens === undefined)
+      return response.status(HttpStatus.NOT_FOUND).send();
     return response.status(HttpStatus.OK).send(tokens);
   }
 }
