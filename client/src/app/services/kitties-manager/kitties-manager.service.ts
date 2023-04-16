@@ -8,16 +8,13 @@ import { Subject } from 'rxjs';
 })
 export class KittiesManagerService {
   private offset: number = 0;
-  private limit: number = 10;
+  private limit: number = 9;
   $kitty: Subject<Kitty> = new Subject();
   private hatsKitties: Map<string, string[]> = new Map();
-  constructor(private communication: CommunicationService) {
-    this.getAllHatsKitties();
-    console.log(this.hatsKitties);
-  }
+
+  constructor(private communication: CommunicationService) {}
 
   private getKitties(kitties: string[]) {
-    console.log(kitties);
     kitties.forEach((kitty: string) =>
       this.communication
         .getKitty(kitty)
@@ -34,12 +31,7 @@ export class KittiesManagerService {
 
   next() {
     this.offset += this.limit;
-    return this.getKitties(
-      Array.from(this.hatsKitties.keys()).slice(
-        this.offset,
-        this.offset + this.limit
-      )
-    );
+    return this.current();
   }
 
   private current() {
@@ -59,12 +51,7 @@ export class KittiesManagerService {
   }
   previous() {
     this.offset -= this.limit;
-    return this.getKitties(
-      Array.from(this.hatsKitties.keys()).slice(
-        this.offset,
-        this.offset + this.limit
-      )
-    );
+    return this.current();
   }
 
   getAllHatsKitties() {

@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Contract } from "web3-eth-contract";
+import { operation } from "retry";
 @Injectable()
 export class ContractEventManagerService {
   events = new Map<string, Map<string, any>>();
@@ -10,10 +11,10 @@ export class ContractEventManagerService {
     types: string[] = ["Transfer", "Apply", "Remove"]
   ) {
     if (this.events.has(address)) {
-      return;
+      return Promise.resolve();
     }
     this.events.set(address, new Map());
-    await this.getAllPastsEvents(contract, address, types);
+    await this.retryRequest(this.getAllPastsEvents.bind(this), contract, address, types);
     await this.subscribe(contract);
   }
 
@@ -27,15 +28,13 @@ export class ContractEventManagerService {
   }
 
   private async getAllPastsEvents(contract: Contract, address: string, types:string[] = ["Transfer", "Apply", "Remove"]) {
-    return await contract.getPastEvents('allEvents',{ fromBlock: 0, toBlock: "latest" }, (error: any, events: any) => {
-      if (error) {
-        return;
-      }
-      types.forEach((type) => {
-        this.events.get(address).set(type, events.filter((event: any) => event.event === type));
-      });
-      return events;
-    }).catch((error: any) => {});
+    return contract.getPastEvents('allEvents',{ fromBlock: 0, toBlock: "latest" }).then(
+      (events: any) => {
+        types.forEach((type) => {
+          this.events.get(address).set(type, events.filter((event: any) => event.event === type));
+        });
+        return events;
+      })
   }
 
   private async subscribe(contract: Contract) {
@@ -47,6 +46,34 @@ export class ContractEventManagerService {
       if (pastEvent !== undefined) {
           this.events.get(contract.options.address).set(event.event, [...pastEvent, event]);
         }
+    });
+  }
+  private get operation() {
+    return operation({
+      retries: 3,
+      factor: 3,
+      minTimeout: 1 * 1000,
+      maxTimeout: 15 * 1000,
+      randomize: true,
+    })
+  }
+
+  //create a retry request
+  private async retryRequest(request: any, ...args: any[]) {
+    return new Promise((resolve, reject) => {
+      const operation = this.operation;
+      operation.attempt(function (currentAttempt: number) {
+        request(...args).then((result: any) => {
+          resolve(result);
+        }).catch((error: any) => {
+          if (!operation.retry(error)) {
+            reject(error);
+          }
+        });
+      });
+    }).then((response) => {
+      this.operation.reset();
+      return response;
     });
   }
 }
