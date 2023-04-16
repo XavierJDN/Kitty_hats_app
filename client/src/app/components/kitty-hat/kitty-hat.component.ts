@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { Kitty } from '@app/interface/kitty';
@@ -11,6 +11,7 @@ import { KittiesManagerService } from '@app/services/kitties-manager/kitties-man
 })
 export class KittyHatComponent implements OnInit {
   tokens: any[] = [];
+  @Input() address: string = '';
   kittyHat: Kitty = {
     address: '',
     name: '',
@@ -18,7 +19,6 @@ export class KittyHatComponent implements OnInit {
     owner: '',
   };
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: { address: string },
     private communication: CommunicationService
   ) {}
 
@@ -28,19 +28,19 @@ export class KittyHatComponent implements OnInit {
 
   getKitty(){
     this.communication
-    .getKitty(this.data.address)
+    .getKitty(this.address)
     .subscribe((response: HttpResponse<any>) => {
       this.kittyHat = {
         bg: response.body.background_color,
         name: response.body.name as string,
-        address: this.data.address,
+        address: this.address,
         img: response.body.image_url,
         owner: response.body.owner.address,
       }
       console.log(this.kittyHat)
     });
 
-    this.communication.getHatsKitty(this.data.address).subscribe((response: HttpResponse<{ block: number, address: string}[]>) => {
+    this.communication.getHatsKitty(this.address).subscribe((response: HttpResponse<{ block: number, address: string}[]>) => {
       response.body?.forEach((token: { block: number, address: string}) => {
           this.communication.getToken(token.address, true).subscribe((tokenData: any) => {
             this.tokens.push({

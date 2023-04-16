@@ -16,9 +16,7 @@ export class KittiesComponent {
   constructor(
     private dialog: MatDialog,
     public kittiesManager: KittiesManagerService
-  ) {}
-
-  ngOnInit(): void {
+  ) {
     this.kitties = [];
     this.kittiesManager.$kitty.subscribe((kitty: Kitty) => {
       this.kitties.push(kitty);
