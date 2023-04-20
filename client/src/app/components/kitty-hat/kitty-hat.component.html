@@ -11,8 +11,7 @@
         <img
           [src]="'data:image/' + img.format + ';base64,' + img.src"
           class="token"
-          [ngClass]="{'dada': isTokenAsSpec(img, 'dada')}"
-          [ngStyle]="{ 'z-index': i }"
+          [ngStyle]="updateStyle(img.style ,{ 'z-index': i })"
           width="300px"
           height="300px"
         />

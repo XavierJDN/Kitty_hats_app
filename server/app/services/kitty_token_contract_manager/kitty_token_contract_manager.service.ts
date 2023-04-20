@@ -73,13 +73,16 @@ export class KittyTokenContractManagerService {
   async getAllKitties(category?: string) {
     const tokens = await this.allKitties();
     let addresses = [];
-    if (category === undefined){
+    if (category === undefined) {
       addresses = tokens;
     } else {
-        const categoryList = await this.kittyTokenMarketContractManagerService.categoryTokens(category);
-        addresses = tokens.filter(
-            (token) => categoryList.includes(token.address));
-
+      const categoryList =
+        await this.kittyTokenMarketContractManagerService.categoryTokens(
+          category
+        );
+      addresses = tokens.filter((token) =>
+        categoryList.includes(token.address)
+      );
     }
     const result = new Map<string, any[]>();
     for (const address of addresses) {
@@ -200,9 +203,15 @@ export class KittyTokenContractManagerService {
               class: [],
             },
             {
+              // all spec are in pixel
               src: data,
               format: type === "svg" ? "svg+xml" : type,
-              class: ["dada"],
+              style: {
+                type: 'position',
+                dimension: 'px',
+                ref: 300,
+                spec: { width: 110, height: 85, top: 115, left: 1 },
+              },
             },
           ]
         : [{ src: data, format: type === "svg" ? "svg+xml" : type, class: [] }];

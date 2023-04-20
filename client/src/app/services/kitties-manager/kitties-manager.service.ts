@@ -67,7 +67,6 @@ export class KittiesManagerService {
     return this.communication
       .getKitty(kitty)
       .subscribe((response: HttpResponse<any>) => {
-        console.log(response.body);
         return {
           bg: response.body.background_color,
           name: response.body.name,

@@ -18,49 +18,79 @@ export class KittyHatComponent implements OnInit {
     img: '',
     owner: '',
   };
-  constructor(
-    private communication: CommunicationService
-  ) {}
+  constructor(private communication: CommunicationService) {}
 
   ngOnInit(): void {
     this.getKitty();
   }
 
-  getKitty(){
+  getKitty() {
     this.communication
-    .getKitty(this.address)
-    .subscribe((response: HttpResponse<any>) => {
-      this.kittyHat = {
-        bg: response.body.background_color,
-        name: response.body.name as string,
-        address: this.address,
-        img: response.body.image_url,
-        owner: response.body.owner.address,
-      }
-      console.log(this.kittyHat)
-    });
-
-    this.communication.getHatsKitty(this.address).subscribe((response: HttpResponse<{ block: number, address: string}[]>) => {
-      response.body?.forEach((token: { block: number, address: string}) => {
-          this.communication.getToken(token.address, true).subscribe((tokenData: any) => {
-            this.tokens.push({
-              block: token.block,
-              ...tokenData.body
-            });
-            this.sortByBlock();
-            console.log(this.tokens);
-          });
-        });
+      .getKitty(this.address)
+      .subscribe((response: HttpResponse<any>) => {
+        this.kittyHat = {
+          bg: response.body.background_color,
+          name: response.body.name as string,
+          address: this.address,
+          img: response.body.image_url,
+          owner: response.body.owner.address,
+        };
       });
+
+    this.communication
+      .getHatsKitty(this.address)
+      .subscribe(
+        (response: HttpResponse<{ block: number; address: string }[]>) => {
+          response.body?.forEach(
+            (token: { block: number; address: string }) => {
+              this.communication
+                .getToken(token.address, true)
+                .subscribe((tokenData: any) => {
+                  tokenData.body.img.map((img: any, ) =>
+                    (img.style !== undefined) ? 
+                      {...img, style: this.createStyle(img.style)} : img);
+                  this.tokens.push({
+                    block: token.block,
+                    ...tokenData.body,
+                  });
+                  this.sortByBlock();
+                });
+            }
+          );
+        }
+      );
+  }
+  createStyle(style: {
+    type: string;
+    spec: any;
+    ref: number;
+    dimension: string;
+  }) {
+    switch (style.type) {
+      case 'position':
+        style.spec = Object.fromEntries(
+          Object.entries(style.spec).map(([att, value]: [string, any]) => {
+            return [
+              att,
+              (((value as number) / style.ref) * 300).toString() +
+                style.dimension,
+            ];
+          })
+        );
+        break;
+      default:
+        break;
+    }
+    return style;
   }
 
-  isTokenAsSpec(token: any, name: string){
-    return token.class.includes(name);
+  updateStyle(style: any, newStyle: any) {
+    return style != undefined ? { ...style, ...newStyle} : newStyle;
   }
-  sortByBlock(){
+
+  sortByBlock() {
     this.tokens.sort((curr, prev) => {
       return curr.block - prev.block;
     });
-
   }
 }
