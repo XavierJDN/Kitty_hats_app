@@ -11,10 +11,13 @@ export class KittyTokenContractManagerService {
     private kittyTokenMarketContractManagerService: KittyTokenMarketContractManagerService,
     private contractEventManagerService: ContractEventManagerService
   ) {}
-
+    private tokens: Map<string, any> = new Map();
   async tokenContract(address: string) {
+    if (!this.tokens.has(address)) {
+      this.tokens.set(address, await this.getContractABI(this.info(address).contract)) 
+    }
     return new this.contractInteractionService.web3.eth.Contract(
-      await this.getContractABI(this.info(address).contract),
+      this.tokens.get(address),
       address
     );
   }
@@ -172,44 +175,52 @@ export class KittyTokenContractManagerService {
     const path = `../kitty-hats-manifest/build/${
       isAsset ? "asset" : "preview"
     }/`;
-    const pattern = { index: "dada", file: "easel.svg" };
     const file = await FsManager.find(path, token.assetUrl);
+    const pattern = { index: "dada", file: "easel.svg" };
+    const data = await FsManager.base64Encode(path + file);
+    const type = FsManager.getType(file);
+    
+    return isAsset ? await this.getAssetImage(path, file, { src: data, type, isPattern: token.assetUrl.toLowerCase().includes(pattern.index) }) : this.getPreviewImage(data, type);
+  }
+
+  private getPreviewImage(src: any, type: string) {
+    return {
+      src,
+      format: type === "svg" ? "svg+xml" : type,
+    } 
+  }
+
+  private async getAssetImage(path: string, file: string, data:{ src: any, type: string, isPattern: boolean}) {
+    const pattern = { index: "dada", file: "easel.svg" };
     const placard = {
       index: "placard",
       file: "dada-placard-" + file.split("-").at(-1).split(".")[0] + ".svg",
     };
-    const data = await FsManager.base64Encode(path + file);
-    const type = FsManager.getType(file);
-    if (isAsset) {
-      return token.assetUrl.toLowerCase().includes(pattern.index)
-        ? [
-            {
-              src: await FsManager.base64Encode(path + pattern.file),
-              format:
-                FsManager.getType(pattern.file) === "svg"
-                  ? "svg+xml"
-                  : FsManager.getType(pattern.file),
-              class: [],
-            },
-            {
-              src: await FsManager.base64Encode(path + placard.file),
-              format:
-                FsManager.getType(placard.file) === "svg"
-                  ? "svg+xml"
-                  : FsManager.getType(placard.file),
-              class: [],
-            },
-            {
-              src: data,
-              format: type === "svg" ? "svg+xml" : type,
-              class: ["dada"],
-            },
-          ]
-        : [{ src: data, format: type === "svg" ? "svg+xml" : type, class: [] }];
-    }
-    return {
-      src: data,
-      format: type === "svg" ? "svg+xml" : type,
-    };
+    return data.isPattern
+      ? [
+          {
+            src: await FsManager.base64Encode(path + pattern.file),
+            format:
+              FsManager.getType(pattern.file) === "svg"
+                ? "svg+xml"
+                : FsManager.getType(pattern.file),
+            class: [],
+          },
+          {
+            src: await FsManager.base64Encode(path + placard.file),
+            format:
+              FsManager.getType(placard.file) === "svg"
+                ? "svg+xml"
+                : FsManager.getType(placard.file),
+            class: [],
+          },
+          {
+            src: data.src,
+            format: data.type === "svg" ? "svg+xml" : data.type,
+            class: ["dada"],
+          },
+        ]
+      : [{ src: data, format: data.type === "svg" ? "svg+xml" : data.type, class: [] }];
+
   }
 }

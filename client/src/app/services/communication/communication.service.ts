@@ -40,7 +40,7 @@ export class CommunicationService {
   }
 
   getHatsKitties(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/tokens/kitties`, { observe: 'response' });
+    return this.http.get(`${this.baseUrl}/tokens/kitties?category=dada`, { observe: 'response' });
   }
 
   getHatsKitty(kittyId: string): Observable<any> {

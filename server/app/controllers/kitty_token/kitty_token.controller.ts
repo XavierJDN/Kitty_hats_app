@@ -12,6 +12,7 @@ import {
   Res,
 } from "@nestjs/common";
 import { Response } from "express";
+import { getHeapSpaceStatistics, getHeapSnapshot } from "v8";
 
 @Controller("tokens")
 export class KittyTokenController {
@@ -123,6 +124,7 @@ export class KittyTokenController {
   //get dada kitty with query option
   @Get("/kitties")
   async kitties(@Query('category') category: string, @Res() response: Response) {
+    console.log(getHeapSpaceStatistics());
     await this.kittyTokenMarketContractManagerService.infos();
     return response
       .status(HttpStatus.OK)
