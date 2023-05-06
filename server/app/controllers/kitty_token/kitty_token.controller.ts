@@ -121,7 +121,7 @@ export class KittyTokenController {
         .map((owner: any) => owner.address)
     );
   }
-  //get dada kitty with query option
+
   @Get("/kitties")
   async kitties(@Query('category') category: string, @Res() response: Response) {
     console.log(getHeapSpaceStatistics());

@@ -76,13 +76,16 @@ export class KittyTokenContractManagerService {
   async getAllKitties(category?: string) {
     const tokens = await this.allKitties();
     let addresses = [];
-    if (category === undefined){
+    if (category === undefined) {
       addresses = tokens;
     } else {
-        const categoryList = await this.kittyTokenMarketContractManagerService.categoryTokens(category);
-        addresses = tokens.filter(
-            (token) => categoryList.includes(token.address));
-
+      const categoryList =
+        await this.kittyTokenMarketContractManagerService.categoryTokens(
+          category
+        );
+      addresses = tokens.filter((token) =>
+        categoryList.includes(token.address)
+      );
     }
     const result = new Map<string, any[]>();
     for (const address of addresses) {

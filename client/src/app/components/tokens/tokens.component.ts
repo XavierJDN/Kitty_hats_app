@@ -46,7 +46,6 @@ export class TokensComponent implements OnInit {
     this.communication
       .getTokens(isNewFocus ? this.focus : undefined, isNext)
       .subscribe((tokens: HttpResponse<any>) => {
-        console.log(tokens);
         this.tokens = tokens.body.page.map((token: Token) =>
           token.owners.map((owner) => {
             return {
@@ -58,7 +57,6 @@ export class TokensComponent implements OnInit {
             };
           })
         ).flat();
-        console.log(this.tokens);
         this.communication.pageId = !this.communication.pageId
           ? tokens.body.id
           : this.communication.pageId;
