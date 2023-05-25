@@ -21,10 +21,38 @@ export class KittyHatComponent implements OnInit {
   constructor(private communication: CommunicationService) {}
 
   ngOnInit(): void {
-    this.getKitty();
+    this.getKittyInformation();
   }
 
-  getKitty() {
+  getKittyInformation() {
+    this.getKitty();
+    this.getHatKitties();
+  }
+
+  createStyle(refStyle: {
+    size: { width: number; height: number };
+    dimension: { width: number; height: number };
+    position: { top: number; left: number };
+  }) {
+    return {
+      top: `${(refStyle.position.top / refStyle.size.height) * 300}px`,
+      left: `${(refStyle.position.left / refStyle.size.width) * 300}px`,
+      width: `${(refStyle.dimension.width / refStyle.size.width) * 300}px`,
+      height: `${(refStyle.dimension.height / refStyle.size.height) * 300}px`,
+    };
+  }
+
+  updateStyle(style: any, newStyle: any) {
+    return style != undefined ? { ...style, ...newStyle } : newStyle;
+  }
+
+  sortByBlock() {
+    this.tokens.sort((curr, prev) => {
+      return curr.block - prev.block;
+    });
+  }
+
+  private getKitty() {
     this.communication
       .getKitty(this.address)
       .subscribe((response: HttpResponse<any>) => {
@@ -36,61 +64,41 @@ export class KittyHatComponent implements OnInit {
           owner: response.body.owner.address,
         };
       });
+  }
 
+  private getHatKitties() {
     this.communication
       .getHatsKitty(this.address)
       .subscribe(
         (response: HttpResponse<{ block: number; address: string }[]>) => {
           response.body?.forEach(
             (token: { block: number; address: string }) => {
-              this.communication
-                .getToken(token.address, true)
-                .subscribe((tokenData: any) => {
-                  tokenData.body.img.map((img: any, ) =>
-                    (img.style !== undefined) ? 
-                      {...img, style: this.createStyle(img.style)} : img);
-                  this.tokens.push({
-                    block: token.block,
-                    ...tokenData.body,
-                  });
-                  this.sortByBlock();
-                });
+              this.getToken(token);
             }
           );
         }
       );
   }
-  createStyle(style: {
-    type: string;
-    spec: any;
-    ref: number;
-    dimension: string;
-  }) {
-    switch (style.type) {
-      case 'position':
-        style.spec = Object.fromEntries(
-          Object.entries(style.spec).map(([att, value]: [string, any]) => {
-            return [
-              att,
-              (((value as number) / style.ref) * 300).toString() +
-                style.dimension,
-            ];
-          })
-        );
-        break;
-      default:
-        break;
-    }
-    return style;
-  }
 
-  updateStyle(style: any, newStyle: any) {
-    return style != undefined ? { ...style, ...newStyle} : newStyle;
-  }
-
-  sortByBlock() {
-    this.tokens.sort((curr, prev) => {
-      return curr.block - prev.block;
-    });
+  private getToken(token: { block: number; address: string }) {
+    const isMainHat = (img: any) =>
+      img.id === undefined ? false : img.id === 'main';
+    this.communication
+      .getToken(token.address, true)
+      .subscribe((tokenData: any) => {
+        const img = tokenData.body.img;
+        const mainHatToken = img.find(isMainHat);
+        mainHatToken.style =
+          mainHatToken.style === undefined
+            ? undefined
+            : this.createStyle(mainHatToken.style);
+        img[img.findIndex(isMainHat)] = mainHatToken;
+        tokenData.body.img = img;
+        this.tokens.push({
+          block: token.block,
+          ...tokenData.body,
+        });
+        this.sortByBlock();
+      });
   }
 }

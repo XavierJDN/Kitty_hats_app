@@ -52,7 +52,7 @@ export class ContractEventManagerService {
     return operation({
       retries: 3,
       factor: 3,
-      minTimeout: 1 * 1000,
+      minTimeout: 3 * 1000,
       maxTimeout: 15 * 1000,
       randomize: true,
     })
