@@ -256,7 +256,7 @@ export class KittyTokenContractManagerService {
       src: data.src,
       format: data.type === "svg" ? "svg+xml" : data.type,
       id: "main",
-      style: isAsset && !isDada
+      style: !isAsset && !isDada
         ? undefined
         : {
               size: { width: 3000, height: 3000 },
