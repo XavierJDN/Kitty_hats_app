@@ -7,7 +7,7 @@ import { FsManager } from "../fs_manager/fs_manager.service";
 @Injectable()
 export class KittyTokenMarketContractManagerService {
   tokens: any[];
-  constructor(private contractInteractionService: ContractInteractionService) {}
+  constructor(private contractInteractionService: ContractInteractionService, private fs: FsManager) {}
 
   async setContract() {
     return await this.contractInteractionService.getContractInstance(
@@ -28,7 +28,7 @@ export class KittyTokenMarketContractManagerService {
   private async listContract() {
     return JSON.parse(
       (
-        await FsManager.readFile(`../kitty-hats-manifest/build/listing_1.json`)
+        await this.fs.readFile(`../kitty-hats-manifest/build/listing_1.json`)
       ).toString()
     );
   }

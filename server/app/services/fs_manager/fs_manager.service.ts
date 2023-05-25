@@ -8,24 +8,25 @@ export class FsManager{
       return await promises.access(file, constants.R_OK);
     }
   
-    static async readFile(path: string): Promise<Buffer> {
+    async readFile(path: string): Promise<Buffer> {
       return await promises.readFile(path);
     }
 
-    static async base64Encode(file: string): Promise<string> {
-      return Buffer.from(await this.readFile(file)).toString('base64')
+    async base64Encode(file: string): Promise<string> {
+      return (await this.readFile(file)).toString('base64');
     }
 
-    static async find(path: string, filename: string): Promise<string | undefined>{
+    async find(path: string, filename: string): Promise<string | undefined>{
       return promises.readdir(path).then(files => {
         return files.find(file => this.fileBaseName(file) === filename);
       })
     }
 
-    static fileBaseName(file: string): string {
+    fileBaseName(file: string): string {
       return file.split('.')[0];
     }
-    static getType(file: string): string {
+
+    getType(file: string): string {
       return file.split('.').pop();
     }
 }

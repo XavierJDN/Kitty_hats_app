@@ -8,7 +8,7 @@ const Contract = require('web3-eth-contract');
 export class ContractInteractionService {
   web3: typeof Web3;
 
-  constructor() {
+  constructor(private fs : FsManager) {
     if(!this.web3){
       this.web3 = new Web3('https://eth-mainnet.g.alchemy.com/v2/rJ2VIc2146pTb-pkD3vVRGmS9--T8iOz');
       this.web3.eth.transactionConfirmationBlocks = 30;
@@ -28,10 +28,10 @@ export class ContractInteractionService {
   }
 
   private async getContractAbi(contractName: string): Promise<AbiItem> {
-    return JSON.parse(((await FsManager.readFile(`./assets/contracts/${contractName}/abi.json`))).toString());
+    return JSON.parse(((await this.fs.readFile(`./assets/contracts/${contractName}/abi.json`))).toString());
   }
 
   private async getContractAddress(contractName: string): Promise<string> {
-    return JSON.parse(((await FsManager.readFile(`./assets/contracts/${contractName}/index.json`))).toString())['address'];
+    return JSON.parse(((await this.fs.readFile(`./assets/contracts/${contractName}/index.json`))).toString())['address'];
   }
 }
