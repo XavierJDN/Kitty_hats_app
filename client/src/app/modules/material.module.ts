@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 // import { MatAutocompleteModule } from '@angular/material/autocomplete';
-// import { MatButtonModule } from '@angular/material/button';
-// import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 // import { MatCheckboxModule } from '@angular/material/checkbox';
 // import { MatChipsModule } from '@angular/material/chips';
@@ -27,13 +27,13 @@ import { MatSelectModule } from '@angular/material/select';
 // import { MatStepperModule } from '@angular/material/stepper';
 // import { MatTableModule } from '@angular/material/table';
 // import { MatTabsModule } from '@angular/material/tabs';
-// import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatToolbarModule } from '@angular/material/toolbar';
 // import { MatTooltipModule } from '@angular/material/tooltip';
 
 const modules = [
     // MatAutocompleteModule,
-    // MatButtonModule,
-    // MatButtonToggleModule,
+    MatButtonModule,
+    MatButtonToggleModule,
     MatCardModule,
     // MatCheckboxModule,
     // MatCheckboxModule,
@@ -59,7 +59,7 @@ const modules = [
     // MatStepperModule,
     // MatTableModule,
     // MatTabsModule,
-    // MatToolbarModule,
+    MatToolbarModule,
     // MatTooltipModule,
 ];
 
