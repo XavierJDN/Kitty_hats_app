@@ -1,3 +1,4 @@
+<app-header [typePage]="'tokens'" (typePageChange)="this.typePageChange($event)"></app-header>
 <app-search-bar (author)="updateFocus(enumFocus.Author, $event)" (owner)="updateFocus(enumFocus.Owner, $event)"></app-search-bar>
 <mat-grid-list cols="3" rowHeight="25em">
     <mat-grid-tile *ngFor="let token of tokens">

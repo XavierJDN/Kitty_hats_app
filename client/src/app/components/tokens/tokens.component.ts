@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { Token } from '@common/token';
 import { Focus } from '@app/enum/focus';
+import { WalletService } from '@app/services/wallet/wallet.service';
 @Component({
   selector: 'app-tokens',
   templateUrl: './tokens.component.html',
@@ -13,9 +14,10 @@ export class TokensComponent implements OnInit {
   id: string | undefined;
   isPrevious = true;
   isNext = true;
+  type = 'all';
   focus: { owner: string; author: string } = { owner: '', author: '' };
   enumFocus: typeof Focus = Focus;
-  constructor(private communication: CommunicationService) {}
+  constructor(private communication: CommunicationService, private wallet: WalletService) {}
 
   ngOnInit(): void {
     this.infoTokens(undefined);
@@ -46,6 +48,7 @@ export class TokensComponent implements OnInit {
     this.communication
       .getTokens(isNewFocus ? this.focus : undefined, isNext)
       .subscribe((tokens: HttpResponse<any>) => {
+        console.log(tokens);
         this.tokens = tokens.body.page.map((token: Token) =>
           token.owners.map((owner) => {
             return {
@@ -64,4 +67,15 @@ export class TokensComponent implements OnInit {
         this.isNext = tokens.body.isNext;
       });
   }
+
+  typePageChange(type: string){
+    if(type === 'all'){
+      this.focus.owner = '';
+      this.infoTokens(undefined);
+    } else {
+      this.focus.owner = this.wallet.address;
+      this.infoTokens(undefined, true);
+    }
+  }
+
 }

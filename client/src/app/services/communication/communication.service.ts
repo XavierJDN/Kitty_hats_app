@@ -13,7 +13,7 @@ export class CommunicationService {
   constructor(private readonly http: HttpClient) {}
 
   getTokens(filter: { author: string, owner: string} | undefined, isNext: boolean = true): Observable<any> {
-    this.pageId = !filter  ? this.pageId : undefined;
+    this.pageId = !filter  ? undefined : this.pageId;
     return !this.pageId
       ? this.initializeTokensPage(filter)
       : this.http.post(

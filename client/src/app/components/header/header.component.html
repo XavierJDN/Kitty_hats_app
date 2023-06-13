@@ -1,16 +1,14 @@
 <mat-toolbar>
-    <mat-toolbar-row>
+    <mat-toolbar-row id="tool">
         <div class="pages">
             <button mat-button routerLink="/home">Tokens</button>
             <button mat-button routerLink="/kitties">Kitties</button>
-        </div>
-        <div>
-            <m-web3-modal
-            title="Modal Title"
-            description="Modal description"
-            descriptionGray="Modal subtitle"
-            dismissText="Text that will dismiss modal on click"
-            ></m-web3-modal>
-        </div>
+        </div>  
+        <button mat-button *ngIf="!this.connected" (click)="openModal()">Connect</button>
+        <p *ngIf="this.connected && this.account !== ''">{{this.account}}</p>
+    </mat-toolbar-row>
+    <mat-toolbar-row id="mode" *ngIf="this.connected">
+        <button mat-button (click)="this.typePageChange.emit('all')">All {{this.typePage}}</button>
+        <button mat-button (click)="this.typePageChange.emit('owned')">My {{this.typePage}}</button>
     </mat-toolbar-row>
 </mat-toolbar>

@@ -1,3 +1,4 @@
+<app-header [typePage]="'kitties'" (typePageChange)="this.changeTypePage($event)"></app-header>
 <mat-grid-list cols="3" rowHeight="25em">
     <mat-grid-tile *ngFor="let kitty of this.kitties">
         <app-kitty [kitty]="kitty"></app-kitty>

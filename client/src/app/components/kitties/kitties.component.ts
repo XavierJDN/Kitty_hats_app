@@ -5,6 +5,7 @@ import { KittyHatComponent } from '@app/components/kitty-hat/kitty-hat.component
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { KittiesManagerService } from '@app/services/kitties-manager/kitties-manager.service';
 import { MatDialog } from '@angular/material/dialog';
+import { WalletService } from '@app/services/wallet/wallet.service';
 @Component({
   selector: 'app-kitties',
   templateUrl: './kitties.component.html',
@@ -12,11 +13,11 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class KittiesComponent {
   kitties: Kitty[] = [];
-
+  type = 'all';
   constructor(
     private dialog: MatDialog,
-    public kittiesManager: KittiesManagerService
-  ) {
+    public kittiesManager: KittiesManagerService,
+    ) {
     this.kitties = [];
     this.kittiesManager.$kitty.subscribe((kitty: Kitty) => {
       this.kitties.push(kitty);
@@ -37,4 +38,14 @@ export class KittiesComponent {
   openDetails(kitty: string) {
     this.dialog.open(KittyHatComponent, { data: { address: kitty } });
   }
+
+  changeTypePage(type: string) {
+    this.kitties = [];
+    if (type === 'all') {
+      this.kittiesManager.getAllHatsKitties();
+    } else {
+      this.kittiesManager.getWalletKitties();
+    }
+  }
+
 }

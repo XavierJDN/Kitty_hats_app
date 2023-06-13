@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Kitty } from '@app/interface/kitty';
 import { CommunicationService } from '@app/services/communication/communication.service';
 import { Subject } from 'rxjs';
+import { WalletService } from '../wallet/wallet.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -12,7 +13,7 @@ export class KittiesManagerService {
   $kitty: Subject<Kitty> = new Subject();
   private hatsKitties: Map<string, string[]> = new Map();
 
-  constructor(private communication: CommunicationService) {}
+  constructor(private communication: CommunicationService, private wallet: WalletService) {}
 
   private getKitties(kitties: string[]) {
     kitties.forEach((kitty: string) =>
@@ -61,6 +62,19 @@ export class KittiesManagerService {
         this.hatsKitties = new Map(Object.entries(response.body));
         this.current();
       });
+  }
+
+  getWalletKitties() {
+    this.communication.getOwnerKitty(this.wallet.address).subscribe((response: HttpResponse<any>) => {
+      response.body.kitties.forEach((kitty: any) => {
+            this.$kitty.next({
+              name: kitty.name as string,
+              address: kitty.id,
+              img: kitty.image_url,
+              owner: this.wallet.address,
+            });
+          });
+    });
   }
 
   getKitty(kitty: string) {
