@@ -12,4 +12,5 @@ export class KittyComponent {
     img: '',
     owner: '',
   };
+  @Input() isOwned = false;
 }

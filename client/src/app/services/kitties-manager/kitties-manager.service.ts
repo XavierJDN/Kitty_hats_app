@@ -65,7 +65,7 @@ export class KittiesManagerService {
   }
 
   getWalletKitties() {
-    this.communication.getOwnerKitty(this.wallet.address).subscribe((response: HttpResponse<any>) => {
+    this.communication.getOwnerKitty('0x7e455CAaC23Eb8eD9884f55eD7e5A42d5DEC2bD9').subscribe((response: HttpResponse<any>) => {
       response.body.kitties.forEach((kitty: any) => {
             this.$kitty.next({
               name: kitty.name as string,

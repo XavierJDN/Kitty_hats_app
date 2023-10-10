@@ -1,20 +1,29 @@
-  <div class="wrapper">
-    <img
-      [src]="kittyHat.img"
-      alt="kitty image"
-      width="300px"
-      height="300px"
-      [ngStyle]="{ 'background-color': kittyHat.bg }"
-    />
-    <ng-container *ngFor="let token of tokens; index as i">
-      <ng-container *ngFor="let img of token.img">
+<div class="wrapper">
+  <img
+    [src]="kittyHat.img"
+    alt="kitty image"
+    width="300px"
+    height="300px"
+    [ngStyle]="{ 'background-color': kittyHat.bg }"
+  />
+  <ng-container *ngFor="let token of tokens; index as i">
+    <ng-container *ngFor="let img of token.img">
+      <img
+        [src]="'data:image/' + img.format + ';base64,' + img.src"
+        class="token"
+        [ngStyle]="updateStyle(img.style ,{ 'z-index': i })"
+        width="300px"
+        height="300px"
+      />
+    </ng-container>
+  </ng-container>
+  <ng-container *ngFor="let token of previewTokens; index as i">
         <img
-          [src]="'data:image/' + img.format + ';base64,' + img.src"
+          [src]="'data:image/' + token.img.format + ';base64,' + token.img.src"
           class="token"
-          [ngStyle]="updateStyle(img.style ,{ 'z-index': i })"
+          [ngStyle]="updateStyle(token.img.style ,{ 'z-index': i })"
           width="300px"
           height="300px"
         />
-      </ng-container>
-    </ng-container>
-  </div>
+  </ng-container>
+</div>

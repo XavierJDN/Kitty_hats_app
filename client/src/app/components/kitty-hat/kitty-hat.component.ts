@@ -4,6 +4,7 @@ import { CommunicationService } from '@app/services/communication/communication.
 import { Kitty } from '@app/interface/kitty';
 import { HttpResponse } from '@angular/common/http';
 import { KittiesManagerService } from '@app/services/kitties-manager/kitties-manager.service';
+import { KittyHatService } from '@app/services/kitty-hat/kitty-hat.service';
 @Component({
   selector: 'app-kitty-hat',
   templateUrl: './kitty-hat.component.html',
@@ -12,13 +13,29 @@ import { KittiesManagerService } from '@app/services/kitties-manager/kitties-man
 export class KittyHatComponent implements OnInit {
   tokens: any[] = [];
   @Input() address: string = '';
+  previewTokens:  {
+    contractAddress: string,
+    name: string,
+    img: { src: string, format: string, style: string },
+    artist: string,
+    owner: { address: string, quantity: number},
+  }[] = [];
+
   kittyHat: Kitty = {
     address: '',
     name: '',
     img: '',
     owner: '',
   };
-  constructor(private communication: CommunicationService) {}
+  constructor(private communication: CommunicationService, private kittyHatService: KittyHatService) {
+    this.kittyHatService.$hatKitties.subscribe((token: any) => {
+      if(token.kittyAddress != this.address) {
+        return;
+      }
+      this.tokens.push(token);
+    });
+
+  }
 
   ngOnInit(): void {
     this.getKittyInformation();
@@ -27,19 +44,6 @@ export class KittyHatComponent implements OnInit {
   getKittyInformation() {
     this.getKitty();
     this.getHatKitties();
-  }
-
-  createStyle(refStyle: {
-    size: { width: number; height: number };
-    dimension: { width: number; height: number };
-    position: { top: number; left: number };
-  }) {
-    return {
-      top: `${(refStyle.position.top / refStyle.size.height) * 300}px`,
-      left: `${(refStyle.position.left / refStyle.size.width) * 300}px`,
-      width: `${(refStyle.dimension.width / refStyle.size.width) * 300}px`,
-      height: `${(refStyle.dimension.height / refStyle.size.height) * 300}px`,
-    };
   }
 
   updateStyle(style: any, newStyle: any) {
@@ -67,38 +71,6 @@ export class KittyHatComponent implements OnInit {
   }
 
   private getHatKitties() {
-    this.communication
-      .getHatsKitty(this.address)
-      .subscribe(
-        (response: HttpResponse<{ block: number; address: string }[]>) => {
-          response.body?.forEach(
-            (token: { block: number; address: string }) => {
-              this.getToken(token);
-            }
-          );
-        }
-      );
-  }
-
-  private getToken(token: { block: number; address: string }) {
-    const isMainHat = (img: any) =>
-      img.id === undefined ? false : img.id === 'main';
-    this.communication
-      .getToken(token.address, true)
-      .subscribe((tokenData: any) => {
-        const img = tokenData.body.img;
-        const mainHatToken = img.find(isMainHat);
-        mainHatToken.style =
-          mainHatToken.style === undefined
-            ? undefined
-            : this.createStyle(mainHatToken.style);
-        img[img.findIndex(isMainHat)] = mainHatToken;
-        tokenData.body.img = img;
-        this.tokens.push({
-          block: token.block,
-          ...tokenData.body,
-        });
-        this.sortByBlock();
-      });
+    this.kittyHatService.getHatKitties(this.address);
   }
 }
