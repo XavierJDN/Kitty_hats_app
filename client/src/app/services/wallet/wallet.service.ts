@@ -31,7 +31,7 @@ export class WalletService {
       this.$connected.next();
     });
   }
-    
+
   get address(): string {
     return this.provider?.selectedAddress;
   }

@@ -20,6 +20,7 @@ import { KittyHatComponent } from './components/kitty-hat/kitty-hat.component';
 import { HeaderComponent } from './components/header/header.component';
 import { IProviderInfo } from '@mindsorg/web3modal-angular/lib/web3modal-ts/src';
 import { CommonModule } from '@angular/common';
+import { KittyDetailsComponent } from './components/kitty-details/kitty-details.component';
 
 
 export const METAMASK: IProviderInfo = {
@@ -39,7 +40,8 @@ export const METAMASK: IProviderInfo = {
     KittyComponent,
     KittiesComponent,
     KittyHatComponent,
-    HeaderComponent
+    HeaderComponent,
+    KittyDetailsComponent
   ],
   imports: [
     Web3ModalModule,
